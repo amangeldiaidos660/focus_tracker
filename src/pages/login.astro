@@ -1,0 +1,39 @@
+---
+import '../../src/styles/global.css';
+const supabaseUrl = import.meta.env.PUBLIC_SUPABASE_URL;
+const supabaseAnonKey = import.meta.env.PUBLIC_SUPABASE_ANON_KEY;
+---
+
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login — Focus Tracker</title>
+  </head>
+  <body class="min-h-screen bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 flex items-center justify-center">
+    <div class="p-8 bg-white dark:bg-gray-800 rounded shadow-md w-full max-w-md text-center">
+      <h1 class="text-2xl font-semibold mb-4">Focus Tracker</h1>
+      <p class="mb-6">Войдите через Google, чтобы продолжить</p>
+      <button id="btn-google-login" class="px-4 py-2 bg-blue-600 text-white rounded">Sign in with Google</button>
+    </div>
+
+    <script type="module" define:vars={{ supabaseUrl, supabaseAnonKey }}>
+      import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
+      import { ensureProfile } from '/src/lib/ensureProfile.ts';
+
+      const supabase = createClient(supabaseUrl, supabaseAnonKey);
+
+      const { data } = await supabase.auth.getSession();
+      if (data?.session?.user) {
+        await ensureProfile();
+        window.location.href = '/';
+      }
+
+      const btn = document.getElementById('btn-google-login');
+      btn?.addEventListener('click', async () => {
+        await supabase.auth.signInWithOAuth({ provider: 'google' });
+      });
+    </script>
+  </body>
+</html>

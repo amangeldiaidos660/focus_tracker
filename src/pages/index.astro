@@ -1,0 +1,65 @@
+---
+import '../../src/styles/global.css';
+const supabaseUrl = import.meta.env.PUBLIC_SUPABASE_URL;
+const supabaseAnonKey = import.meta.env.PUBLIC_SUPABASE_ANON_KEY;
+---
+
+<html lang="ru">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Focus Tracker</title>
+  </head>
+  <body class="min-h-screen bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
+    <main class="max-w-4xl mx-auto p-6">
+      <header class="flex items-center justify-between mb-6">
+        <h1 class="text-2xl font-semibold">Focus Tracker</h1>
+        <a href="/settings" class="text-sm text-blue-600">Settings</a>
+      </header>
+
+      <section class="mb-6">
+        <div class="p-6 bg-white dark:bg-gray-800 rounded shadow"> 
+          <h2 class="font-semibold mb-2">Главный таймер</h2>
+          <p class="text-sm text-gray-600 mb-4">Нажмите «Start» чтобы открыть настройки сессии.</p>
+          <button id="btn-open-timer" class="px-4 py-2 bg-blue-600 text-white rounded">Start</button>
+        </div>
+      </section>
+
+      <section class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="p-4 bg-white dark:bg-gray-800 rounded shadow">
+          <h3 class="font-semibold mb-2">Focus Groups</h3>
+          <p class="text-sm text-gray-600">Список фокус-групп загрузится после авторизации.</p>
+        </div>
+
+        <div class="p-4 bg-white dark:bg-gray-800 rounded shadow">
+          <h3 class="font-semibold mb-2">Statistics</h3>
+          <p class="text-sm text-gray-600">Сегодня / Неделя / Месяц / Всего</p>
+        </div>
+      </section>
+
+    </main>
+
+    <script type="module" define:vars={{ supabaseUrl, supabaseAnonKey }}>
+      import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
+      import { ensureProfile } from '/src/lib/ensureProfile.ts';
+      const supabase = createClient(supabaseUrl, supabaseAnonKey);
+
+      // minimal client behavior: redirect to /login if not authenticated
+      (async () => {
+        const { data } = await supabase.auth.getSession();
+        const user = data?.session?.user;
+        if (!user) {
+          window.location.href = '/login';
+          return;
+        }
+
+        await ensureProfile();
+
+        // open timer click handler placeholder
+        document.getElementById('btn-open-timer')?.addEventListener('click', () => {
+          alert('Open timer popup (to be implemented)');
+        });
+      })();
+    </script>
+  </body>
+</html>
