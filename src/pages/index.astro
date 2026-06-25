@@ -1,7 +1,6 @@
 ---
 import '../../src/styles/global.css';
-const supabaseUrl = import.meta.env.PUBLIC_SUPABASE_URL;
-const supabaseAnonKey = import.meta.env.PUBLIC_SUPABASE_ANON_KEY;
+
 ---
 
 <html lang="ru">
@@ -39,27 +38,24 @@ const supabaseAnonKey = import.meta.env.PUBLIC_SUPABASE_ANON_KEY;
 
     </main>
 
-    <script type="module" define:vars={{ supabaseUrl, supabaseAnonKey }}>
-      import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
-      import { ensureProfile } from '/src/lib/ensureProfile.ts';
-      const supabase = createClient(supabaseUrl, supabaseAnonKey);
+    <script>
+      import { supabaseClient } from '../lib/supabaseClient';
+      import { ensureProfile } from '../lib/ensureProfile';
 
-      // minimal client behavior: redirect to /login if not authenticated
-      (async () => {
-        const { data } = await supabase.auth.getSession();
-        const user = data?.session?.user;
-        if (!user) {
-          window.location.href = '/login';
-          return;
-        }
+      const { data } = await supabaseClient.auth.getSession();
+      const user = data.session?.user;
 
+      if (!user) {
+        window.location.href = '/login';
+      } else {
         await ensureProfile();
 
-        // open timer click handler placeholder
-        document.getElementById('btn-open-timer')?.addEventListener('click', () => {
-          alert('Open timer popup (to be implemented)');
-        });
-      })();
+        document
+          .getElementById('btn-open-timer')
+          ?.addEventListener('click', () => {
+            alert('Open timer popup (to be implemented)');
+          });
+      }
     </script>
   </body>
 </html>

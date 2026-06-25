@@ -1,7 +1,6 @@
 ---
 import '../../src/styles/global.css';
-const supabaseUrl = import.meta.env.PUBLIC_SUPABASE_URL;
-const supabaseAnonKey = import.meta.env.PUBLIC_SUPABASE_ANON_KEY;
+
 ---
 
 <!doctype html>
@@ -18,22 +17,30 @@ const supabaseAnonKey = import.meta.env.PUBLIC_SUPABASE_ANON_KEY;
       <button id="btn-google-login" class="px-4 py-2 bg-blue-600 text-white rounded">Sign in with Google</button>
     </div>
 
-    <script type="module" define:vars={{ supabaseUrl, supabaseAnonKey }}>
-      import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
-      import { ensureProfile } from '/src/lib/ensureProfile.ts';
+    <script>
+      import { supabaseClient } from '../lib/supabaseClient';
+      import { ensureProfile } from '../lib/ensureProfile';
 
-      const supabase = createClient(supabaseUrl, supabaseAnonKey);
+      const { data } = await supabaseClient.auth.getSession();
 
-      const { data } = await supabase.auth.getSession();
-      if (data?.session?.user) {
+      if (data.session?.user) {
         await ensureProfile();
         window.location.href = '/';
       }
 
-      const btn = document.getElementById('btn-google-login');
-      btn?.addEventListener('click', async () => {
-        // Use redirect flow to avoid popup being blocked by the browser
-        await supabase.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: window.location.origin } });
+      const button = document.getElementById('btn-google-login');
+
+      button?.addEventListener('click', async () => {
+        const { error } = await supabaseClient.auth.signInWithOAuth({
+          provider: 'google',
+          options: {
+            redirectTo: window.location.origin
+          }
+        });
+
+        if (error) {
+          console.error('Google authentication error:', error);
+        }
       });
     </script>
   </body>
