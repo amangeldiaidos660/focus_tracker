@@ -1,31 +1,59 @@
 ---
-import '../../src/styles/global.css';
-const supabaseUrl = import.meta.env.PUBLIC_SUPABASE_URL;
-const supabaseAnonKey = import.meta.env.PUBLIC_SUPABASE_ANON_KEY;
+import '../styles/global.css';
 ---
 
+<!doctype html>
 <html lang="ru">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Settings — Focus Tracker</title>
+    <title>Настройки — Focus Tracker</title>
   </head>
-  <body class="min-h-screen bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
-    <main class="max-w-2xl mx-auto p-6">
-      <h1 class="text-2xl font-semibold mb-4">Settings</h1>
-      <div class="p-4 bg-white dark:bg-gray-800 rounded shadow">
-        <button id="btn-signout" class="px-4 py-2 bg-red-600 text-white rounded">Sign Out</button>
+
+  <body class="min-h-screen bg-slate-950 text-slate-100">
+    <main class="mx-auto max-w-2xl px-4 py-8 sm:px-6">
+      <a href="/" class="text-sm text-blue-400 hover:text-blue-300">
+        ← На главную
+      </a>
+
+      <h1 class="mt-5 text-3xl font-semibold">Настройки</h1>
+
+      <div class="mt-6 rounded-xl border border-slate-800 bg-slate-900 p-5">
+        <h2 class="font-semibold">Аккаунт</h2>
+        <p id="account-email" class="mt-2 text-sm text-slate-400"></p>
+
+        <button
+          id="btn-signout"
+          class="mt-5 rounded-lg bg-red-600 px-4 py-2 font-medium text-white hover:bg-red-500"
+        >
+          Выйти из аккаунта
+        </button>
       </div>
     </main>
 
-    <script type="module" define:vars={{ supabaseUrl, supabaseAnonKey }}>
-      import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
-      const supabase = createClient(supabaseUrl, supabaseAnonKey);
+    <script>
+      import { supabaseClient } from '../lib/supabaseClient';
 
-      document.getElementById('btn-signout')?.addEventListener('click', async () => {
-        await supabase.auth.signOut();
+      const { data } = await supabaseClient.auth.getSession();
+      const user = data.session?.user;
+
+      if (!user) {
         window.location.href = '/login';
-      });
+      } else {
+        const email = document.getElementById('account-email');
+
+        if (email) {
+          email.textContent = user.email ?? '';
+        }
+      }
+
+      document
+        .getElementById('btn-signout')
+        ?.addEventListener('click', async () => {
+          await supabaseClient.auth.signOut();
+          localStorage.removeItem('focus-tracker-active-session');
+          window.location.href = '/login';
+        });
     </script>
   </body>
 </html>

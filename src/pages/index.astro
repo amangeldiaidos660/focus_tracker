@@ -1,61 +1,362 @@
 ---
-import '../../src/styles/global.css';
-
+import '../styles/global.css';
 ---
 
+<!doctype html>
 <html lang="ru">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Focus Tracker</title>
   </head>
-  <body class="min-h-screen bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
-    <main class="max-w-4xl mx-auto p-6">
-      <header class="flex items-center justify-between mb-6">
-        <h1 class="text-2xl font-semibold">Focus Tracker</h1>
-        <a href="/settings" class="text-sm text-blue-600">Settings</a>
+
+  <body class="min-h-screen bg-slate-950 text-slate-100">
+    <main id="app" class="mx-auto min-h-screen max-w-6xl px-4 py-6 sm:px-6 lg:px-8">
+      <header class="mb-8 flex flex-wrap items-center justify-between gap-4">
+        <div>
+          <p class="text-sm font-medium uppercase tracking-[0.25em] text-blue-400">
+            Focus Tracker
+          </p>
+          <h1 class="mt-1 text-3xl font-semibold">Учитесь сосредоточенно</h1>
+          <p id="user-name" class="mt-1 text-sm text-slate-400"></p>
+        </div>
+
+        <a
+          href="/settings"
+          class="rounded-lg border border-slate-700 px-4 py-2 text-sm hover:border-slate-500"
+        >
+          Настройки
+        </a>
       </header>
 
-      <section class="mb-6">
-        <div class="p-6 bg-white dark:bg-gray-800 rounded shadow"> 
-          <h2 class="font-semibold mb-2">Главный таймер</h2>
-          <p class="text-sm text-gray-600 mb-4">Нажмите «Start» чтобы открыть настройки сессии.</p>
-          <button id="btn-open-timer" class="px-4 py-2 bg-blue-600 text-white rounded">Start</button>
+      <section class="mb-8 rounded-2xl border border-blue-500/20 bg-gradient-to-br from-blue-600/20 to-slate-900 p-6">
+        <div class="flex flex-col justify-between gap-5 sm:flex-row sm:items-center">
+          <div>
+            <h2 class="text-xl font-semibold">Начать фокус-сессию</h2>
+            <p class="mt-2 max-w-xl text-sm text-slate-300">
+              Выберите группу, задачу, длительность занятия и настройте перерывы.
+            </p>
+          </div>
+
+          <button
+            id="open-session"
+            class="rounded-xl bg-blue-500 px-5 py-3 font-medium text-white hover:bg-blue-400"
+          >
+            Настроить таймер
+          </button>
         </div>
       </section>
 
-      <section class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div class="p-4 bg-white dark:bg-gray-800 rounded shadow">
-          <h3 class="font-semibold mb-2">Focus Groups</h3>
-          <p class="text-sm text-gray-600">Список фокус-групп загрузится после авторизации.</p>
+      <section class="mb-8">
+        <div class="mb-4 flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <h2 class="text-xl font-semibold">Фокус-группы</h2>
+            <p class="mt-1 text-sm text-slate-400">
+              Направления обучения и связанные с ними ресурсы.
+            </p>
+          </div>
+
+          <button
+            id="open-group-form"
+            class="rounded-lg bg-slate-100 px-4 py-2 text-sm font-medium text-slate-950 hover:bg-white"
+          >
+            Добавить группу
+          </button>
         </div>
 
-        <div class="p-4 bg-white dark:bg-gray-800 rounded shadow">
-          <h3 class="font-semibold mb-2">Statistics</h3>
-          <p class="text-sm text-gray-600">Сегодня / Неделя / Месяц / Всего</p>
+        <div
+          id="groups-loading"
+          class="rounded-xl border border-slate-800 p-6 text-center text-slate-400"
+        >
+          Загрузка групп...
         </div>
+
+        <div
+          id="groups-empty"
+          class="hidden rounded-xl border border-dashed border-slate-700 p-8 text-center"
+        >
+          <p class="text-slate-300">У вас пока нет фокус-групп.</p>
+          <p class="mt-1 text-sm text-slate-500">
+            Создайте первую группу, затем добавьте в неё учебные ресурсы.
+          </p>
+        </div>
+
+        <div id="groups-list" class="space-y-4"></div>
       </section>
 
+      <section>
+        <div class="mb-4">
+          <h2 class="text-xl font-semibold">Статистика</h2>
+          <p class="mt-1 text-sm text-slate-400">
+            Учитывается фактическое время завершённых и остановленных сессий.
+          </p>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3 lg:grid-cols-4">
+          <article class="rounded-xl border border-slate-800 bg-slate-900 p-4">
+            <p class="text-sm text-slate-400">Сегодня</p>
+            <p id="stat-today" class="mt-2 text-2xl font-semibold">0 мин</p>
+          </article>
+
+          <article class="rounded-xl border border-slate-800 bg-slate-900 p-4">
+            <p class="text-sm text-slate-400">Неделя</p>
+            <p id="stat-week" class="mt-2 text-2xl font-semibold">0 мин</p>
+          </article>
+
+          <article class="rounded-xl border border-slate-800 bg-slate-900 p-4">
+            <p class="text-sm text-slate-400">Месяц</p>
+            <p id="stat-month" class="mt-2 text-2xl font-semibold">0 мин</p>
+          </article>
+
+          <article class="rounded-xl border border-slate-800 bg-slate-900 p-4">
+            <p class="text-sm text-slate-400">Всё время</p>
+            <p id="stat-total" class="mt-2 text-2xl font-semibold">0 мин</p>
+          </article>
+        </div>
+
+        <div class="mt-4 overflow-hidden rounded-xl border border-slate-800">
+          <div class="border-b border-slate-800 bg-slate-900 px-4 py-3 font-medium">
+            История по дням
+          </div>
+
+          <div id="history-empty" class="p-5 text-sm text-slate-500">
+            Завершённых сессий пока нет.
+          </div>
+
+          <div class="overflow-x-auto">
+            <table id="history-table" class="hidden w-full text-left text-sm">
+              <thead class="bg-slate-900/60 text-slate-400">
+                <tr>
+                  <th class="px-4 py-3 font-medium">Дата</th>
+                  <th class="px-4 py-3 text-right font-medium">Время фокуса</th>
+                </tr>
+              </thead>
+              <tbody id="history-body" class="divide-y divide-slate-800"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
     </main>
 
-    <script>
-      import { supabaseClient } from '../lib/supabaseClient';
-      import { ensureProfile } from '../lib/ensureProfile';
+    <div
+      id="notice"
+      class="pointer-events-none fixed bottom-5 left-1/2 z-[70] hidden -translate-x-1/2 rounded-lg px-4 py-3 text-sm shadow-xl"
+    ></div>
 
-      const { data } = await supabaseClient.auth.getSession();
-      const user = data.session?.user;
+    <dialog id="group-dialog" class="app-dialog">
+      <form id="group-form" class="dialog-card">
+        <div class="flex items-center justify-between gap-4">
+          <h2 class="text-xl font-semibold">Новая фокус-группа</h2>
+          <button
+            type="button"
+            data-close-dialog="group-dialog"
+            class="dialog-close"
+            aria-label="Закрыть"
+          >
+            ×
+          </button>
+        </div>
 
-      if (!user) {
-        window.location.href = '/login';
-      } else {
-        await ensureProfile();
+        <label class="mt-5 block">
+          <span class="field-label">Название</span>
+          <input
+            id="group-title"
+            class="field-input"
+            maxlength="100"
+            required
+            placeholder="Например, Изучение Python"
+          />
+        </label>
 
-        document
-          .getElementById('btn-open-timer')
-          ?.addEventListener('click', () => {
-            alert('Open timer popup (to be implemented)');
-          });
-      }
-    </script>
+        <div class="mt-6 flex justify-end gap-3">
+          <button type="button" data-close-dialog="group-dialog" class="button-secondary">
+            Отмена
+          </button>
+          <button type="submit" class="button-primary">Создать</button>
+        </div>
+      </form>
+    </dialog>
+
+    <dialog id="task-dialog" class="app-dialog">
+      <form id="task-form" class="dialog-card">
+        <div class="flex items-center justify-between gap-4">
+          <h2 class="text-xl font-semibold">Новая задача</h2>
+          <button
+            type="button"
+            data-close-dialog="task-dialog"
+            class="dialog-close"
+            aria-label="Закрыть"
+          >
+            ×
+          </button>
+        </div>
+
+        <input id="task-group-id" type="hidden" />
+
+        <label class="mt-5 block">
+          <span class="field-label">Название</span>
+          <input
+            id="task-title"
+            class="field-input"
+            maxlength="150"
+            required
+            placeholder="Например, Stepik — основы Python"
+          />
+        </label>
+
+        <label class="mt-4 block">
+          <span class="field-label">Ссылка</span>
+          <input
+            id="task-url"
+            class="field-input"
+            type="url"
+            required
+            placeholder="https://..."
+          />
+        </label>
+
+        <label class="mt-4 block">
+          <span class="field-label">Описание задачи, необязательно</span>
+          <textarea
+            id="task-description"
+            class="field-input min-h-24 resize-y"
+            maxlength="500"
+          ></textarea>
+        </label>
+
+        <div class="mt-6 flex justify-end gap-3">
+          <button type="button" data-close-dialog="task-dialog" class="button-secondary">
+            Отмена
+          </button>
+          <button type="submit" class="button-primary">Создать</button>
+        </div>
+      </form>
+    </dialog>
+
+    <dialog id="session-dialog" class="app-dialog">
+      <form id="session-form" class="dialog-card">
+        <div class="flex items-center justify-between gap-4">
+          <h2 class="text-xl font-semibold">Настройка фокуса</h2>
+          <button
+            type="button"
+            data-close-dialog="session-dialog"
+            class="dialog-close"
+            aria-label="Закрыть"
+          >
+            ×
+          </button>
+        </div>
+
+        <label class="mt-5 block">
+          <span class="field-label">Фокус-группа</span>
+          <select id="session-group" class="field-input" required></select>
+        </label>
+
+        <label class="mt-4 block">
+          <span class="field-label">Задача</span>
+          <select id="session-task" class="field-input" required></select>
+        </label>
+
+        <label class="mt-4 block">
+          <span class="field-label">Длительность фокуса, минут</span>
+          <input
+            id="session-duration"
+            class="field-input"
+            type="number"
+            min="1"
+            max="480"
+            value="25"
+            required
+          />
+        </label>
+
+        <label class="mt-4 flex items-center gap-3">
+          <input
+            id="break-enabled"
+            type="checkbox"
+            class="h-4 w-4 accent-blue-500"
+          />
+          <span class="text-sm text-slate-200">Включить автоматические перерывы</span>
+        </label>
+
+        <div id="break-fields" class="mt-4 hidden grid-cols-2 gap-4">
+          <label>
+            <span class="field-label">Перерыв через, минут</span>
+            <input
+              id="break-interval"
+              class="field-input"
+              type="number"
+              min="1"
+              max="240"
+              value="25"
+            />
+          </label>
+
+          <label>
+            <span class="field-label">Длительность, минут</span>
+            <input
+              id="break-duration"
+              class="field-input"
+              type="number"
+              min="1"
+              max="60"
+              value="5"
+            />
+          </label>
+        </div>
+
+        <div class="mt-6 flex justify-end gap-3">
+          <button type="button" data-close-dialog="session-dialog" class="button-secondary">
+            Отмена
+          </button>
+          <button type="submit" class="button-primary">Начать фокус</button>
+        </div>
+      </form>
+    </dialog>
+
+    <section
+      id="timer-overlay"
+      class="fixed inset-0 z-[60] hidden min-h-screen items-center justify-center bg-slate-950 px-4"
+    >
+      <div class="w-full max-w-xl text-center">
+        <p
+          id="timer-mode"
+          class="text-sm font-medium uppercase tracking-[0.25em] text-blue-400"
+        >
+          Фокус
+        </p>
+
+        <h2 id="timer-task-title" class="mt-3 text-2xl font-semibold"></h2>
+        <p id="timer-group-title" class="mt-1 text-slate-400"></p>
+
+        <div
+          id="timer-clock"
+          class="my-10 font-mono text-7xl font-semibold tracking-tight sm:text-8xl"
+        >
+          25:00
+        </div>
+
+        <p id="timer-message" class="mb-8 text-sm text-slate-400"></p>
+
+        <div class="flex flex-wrap justify-center gap-3">
+          <button id="timer-pause" class="button-secondary px-6 py-3">
+            Пауза
+          </button>
+
+          <button id="timer-resume" class="button-primary hidden px-6 py-3">
+            Продолжить
+          </button>
+
+          <button
+            id="timer-stop"
+            class="rounded-lg bg-red-600 px-6 py-3 font-medium text-white hover:bg-red-500"
+          >
+            Остановить
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <script src="../scripts/app.ts"></script>
   </body>
 </html>
