@@ -1,0 +1,36 @@
+<section class="mb-8">
+  <div class="mb-4 flex flex-wrap items-center justify-between gap-3">
+    <div>
+      <h2 class="text-xl font-semibold">Фокус-группы</h2>
+      <p class="mt-1 text-sm text-slate-400">
+        Направления обучения и связанные с ними ресурсы.
+      </p>
+    </div>
+
+    <button
+      id="open-group-form"
+      class="rounded-lg bg-slate-100 px-4 py-2 text-sm font-medium text-slate-950 hover:bg-white"
+    >
+      Добавить группу
+    </button>
+  </div>
+
+  <div
+    id="groups-loading"
+    class="rounded-xl border border-slate-800 p-6 text-center text-slate-400"
+  >
+    Загрузка групп...
+  </div>
+
+  <div
+    id="groups-empty"
+    class="hidden rounded-xl border border-dashed border-slate-700 p-8 text-center"
+  >
+    <p class="text-slate-300">У вас пока нет фокус-групп.</p>
+    <p class="mt-1 text-sm text-slate-500">
+      Создайте первую группу, затем добавьте в неё учебные ресурсы.
+    </p>
+  </div>
+
+  <div id="groups-list" class="space-y-4"></div>
+</section>

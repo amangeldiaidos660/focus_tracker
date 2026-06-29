@@ -1,0 +1,80 @@
+<dialog id="session-dialog" class="app-dialog">
+  <form id="session-form" class="dialog-card">
+    <div class="flex items-center justify-between gap-4">
+      <h2 class="text-xl font-semibold">Настройка фокуса</h2>
+      <button
+        type="button"
+        data-close-dialog="session-dialog"
+        class="dialog-close"
+        aria-label="Закрыть"
+      >
+        ×
+      </button>
+    </div>
+
+    <label class="mt-5 block">
+      <span class="field-label">Фокус-группа</span>
+      <select id="session-group" class="field-input" required></select>
+    </label>
+
+    <label class="mt-4 block">
+      <span class="field-label">Задача</span>
+      <select id="session-task" class="field-input" required></select>
+    </label>
+
+    <label class="mt-4 block">
+      <span class="field-label">Длительность фокуса, минут</span>
+      <input
+        id="session-duration"
+        class="field-input"
+        type="number"
+        min="1"
+        max="480"
+        value="25"
+        required
+      />
+    </label>
+
+    <label class="mt-4 flex items-center gap-3">
+      <input
+        id="break-enabled"
+        type="checkbox"
+        class="h-4 w-4 accent-blue-500"
+      />
+      <span class="text-sm text-slate-200">Включить автоматические перерывы</span>
+    </label>
+
+    <div id="break-fields" class="mt-4 hidden grid-cols-2 gap-4">
+      <label>
+        <span class="field-label">Перерыв через, минут</span>
+        <input
+          id="break-interval"
+          class="field-input"
+          type="number"
+          min="1"
+          max="240"
+          value="25"
+        />
+      </label>
+
+      <label>
+        <span class="field-label">Длительность, минут</span>
+        <input
+          id="break-duration"
+          class="field-input"
+          type="number"
+          min="1"
+          max="60"
+          value="5"
+        />
+      </label>
+    </div>
+
+    <div class="mt-6 flex justify-end gap-3">
+      <button type="button" data-close-dialog="session-dialog" class="button-secondary">
+        Отмена
+      </button>
+      <button type="submit" class="button-primary">Начать фокус</button>
+    </div>
+  </form>
+</dialog>

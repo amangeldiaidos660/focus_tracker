@@ -1,0 +1,33 @@
+<dialog id="group-dialog" class="app-dialog">
+  <form id="group-form" class="dialog-card">
+    <div class="flex items-center justify-between gap-4">
+      <h2 class="text-xl font-semibold">Новая фокус-группа</h2>
+      <button
+        type="button"
+        data-close-dialog="group-dialog"
+        class="dialog-close"
+        aria-label="Закрыть"
+      >
+        ×
+      </button>
+    </div>
+
+    <label class="mt-5 block">
+      <span class="field-label">Название</span>
+      <input
+        id="group-title"
+        class="field-input"
+        maxlength="100"
+        required
+        placeholder="Например, Изучение Python"
+      />
+    </label>
+
+    <div class="mt-6 flex justify-end gap-3">
+      <button type="button" data-close-dialog="group-dialog" class="button-secondary">
+        Отмена
+      </button>
+      <button type="submit" class="button-primary">Создать</button>
+    </div>
+  </form>
+</dialog>
