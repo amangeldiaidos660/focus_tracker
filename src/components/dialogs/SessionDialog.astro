@@ -12,6 +12,35 @@
       </button>
     </div>
 
+    <fieldset class="mt-5">
+      <legend class="field-label">Режим таймера</legend>
+      <div class="grid grid-cols-2 gap-2">
+        <label class="cursor-pointer">
+          <input
+            class="peer sr-only"
+            type="radio"
+            name="session-mode"
+            value="countdown"
+            checked
+          />
+          <span class="block rounded-lg border border-slate-700 px-3 py-3 text-center text-sm peer-checked:border-blue-500 peer-checked:bg-blue-500/10 peer-checked:text-blue-300">
+            На время
+          </span>
+        </label>
+        <label class="cursor-pointer">
+          <input
+            class="peer sr-only"
+            type="radio"
+            name="session-mode"
+            value="stopwatch"
+          />
+          <span class="block rounded-lg border border-slate-700 px-3 py-3 text-center text-sm peer-checked:border-blue-500 peer-checked:bg-blue-500/10 peer-checked:text-blue-300">
+            Без лимита
+          </span>
+        </label>
+      </div>
+    </fieldset>
+
     <label class="mt-5 block">
       <span class="field-label">Фокус-группа</span>
       <select id="session-group" class="field-input" required></select>
@@ -22,8 +51,14 @@
       <select id="session-task" class="field-input" required></select>
     </label>
 
-    <label class="mt-4 block">
+    <div id="session-duration-fields" class="mt-4">
       <span class="field-label">Длительность фокуса, минут</span>
+      <div class="mb-3 grid grid-cols-4 gap-2">
+        <button type="button" data-duration="15" class="button-secondary px-2 py-2 text-sm">15</button>
+        <button type="button" data-duration="25" class="button-secondary px-2 py-2 text-sm">25</button>
+        <button type="button" data-duration="45" class="button-secondary px-2 py-2 text-sm">45</button>
+        <button type="button" data-duration="60" class="button-secondary px-2 py-2 text-sm">60</button>
+      </div>
       <input
         id="session-duration"
         class="field-input"
@@ -33,7 +68,7 @@
         value="25"
         required
       />
-    </label>
+    </div>
 
     <label class="mt-4 flex items-center gap-3">
       <input
@@ -74,7 +109,9 @@
       <button type="button" data-close-dialog="session-dialog" class="button-secondary">
         Отмена
       </button>
-      <button type="submit" class="button-primary">Начать фокус</button>
+      <button id="session-submit" type="submit" class="button-primary">
+        Начать фокус
+      </button>
     </div>
   </form>
 </dialog>

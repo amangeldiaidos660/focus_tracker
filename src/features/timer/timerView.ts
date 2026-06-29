@@ -3,8 +3,11 @@ import { formatClock, formatDuration } from '../../shared/formatters';
 import type { TimerState } from '../../types/focus';
 
 export function updateTimerView(timerState: TimerState): void {
-  getElement('timer-mode').textContent =
-    timerState.phase === 'focus' ? 'Фокус' : 'Перерыв';
+  const modeLabel =
+    timerState.mode === 'countdown' ? 'На время' : 'Без лимита';
+  const phaseLabel = timerState.phase === 'focus' ? 'Фокус' : 'Перерыв';
+
+  getElement('timer-mode').textContent = `${modeLabel} · ${phaseLabel}`;
   getElement('timer-task-title').textContent = timerState.taskTitle;
   getElement('timer-group-title').textContent = timerState.groupTitle;
   getElement('timer-clock').textContent = formatClock(timerState.secondsLeft);

@@ -11,7 +11,7 @@ import { closeDialog, openDialog } from '../../shared/dialogs';
 import { escapeHtml, getElement } from '../../shared/dom';
 import { showNotice } from '../../shared/notice';
 import { getTasks, getUserId, groups } from '../../stores/focusStore';
-import type { TimerState } from '../../types/focus';
+import type { TimerMode, TimerState } from '../../types/focus';
 import {
   getTimerState,
   readStoredTimerState,
@@ -22,6 +22,23 @@ import {
 import { hideTimer, showTimer, updateTimerView } from './timerView';
 
 let timerInterval: number | null = null;
+
+function getSelectedMode(): TimerMode {
+  const selected = document.querySelector<HTMLInputElement>(
+    'input[name="session-mode"]:checked'
+  );
+
+  return selected?.value === 'stopwatch' ? 'stopwatch' : 'countdown';
+}
+
+function updateModeFields(): void {
+  const isCountdown = getSelectedMode() === 'countdown';
+  const durationFields = getElement('session-duration-fields');
+  const durationInput = getElement<HTMLInputElement>('session-duration');
+
+  durationFields.classList.toggle('hidden', !isCountdown);
+  durationInput.required = isCountdown;
+}
 
 function populateSessionTasks(groupId: string, selectedTaskId?: string): void {
   const taskSelect = getElement<HTMLSelectElement>('session-task');
@@ -68,6 +85,7 @@ function populateSessionGroups(
 
 export function openSessionSetup(groupId: string, taskId: string): void {
   populateSessionGroups(groupId, taskId);
+  updateModeFields();
   openDialog(getElement<HTMLDialogElement>('session-dialog'));
 }
 
@@ -125,12 +143,18 @@ async function advanceTimer(): Promise<void> {
 
   if (timerState.phase === 'focus') {
     timerState.focusSecondsElapsed += elapsed;
-    timerState.secondsLeft = Math.max(
-      0,
-      timerState.durationSeconds - timerState.focusSecondsElapsed
-    );
+    timerState.secondsLeft =
+      timerState.mode === 'countdown'
+        ? Math.max(
+            0,
+            timerState.durationSeconds - timerState.focusSecondsElapsed
+          )
+        : timerState.focusSecondsElapsed;
 
-    if (timerState.focusSecondsElapsed >= timerState.durationSeconds) {
+    if (
+      timerState.mode === 'countdown' &&
+      timerState.focusSecondsElapsed >= timerState.durationSeconds
+    ) {
       await finishSession('completed');
       return;
     }
@@ -150,7 +174,9 @@ async function advanceTimer(): Promise<void> {
     if (timerState.secondsLeft === 0) {
       timerState.phase = 'focus';
       timerState.secondsLeft =
-        timerState.durationSeconds - timerState.focusSecondsElapsed;
+        timerState.mode === 'countdown'
+          ? timerState.durationSeconds - timerState.focusSecondsElapsed
+          : timerState.focusSecondsElapsed;
     }
   }
 
@@ -169,6 +195,7 @@ function startTimerLoop(): void {
 }
 
 async function startSession(): Promise<void> {
+  const mode = getSelectedMode();
   const groupId = getElement<HTMLSelectElement>('session-group').value;
   const taskId = getElement<HTMLSelectElement>('session-task').value;
   const durationMinutes = Number(
@@ -184,7 +211,7 @@ async function startSession(): Promise<void> {
   const group = groups.get(groupId);
   const task = getTasks(groupId).find((item) => item.id === taskId);
 
-  if (!group || !task || durationMinutes < 1) {
+  if (!group || !task || (mode === 'countdown' && durationMinutes < 1)) {
     showNotice('Выберите группу, задачу и длительность.', 'error');
     return;
   }
@@ -211,10 +238,14 @@ async function startSession(): Promise<void> {
     return;
   }
 
+  const durationSeconds =
+    mode === 'countdown' ? durationMinutes * 60 : 0;
   const { data, error } = await createSession({
     userId: getUserId(),
     groupId,
     taskId,
+    mode,
+    plannedDurationSeconds: mode === 'countdown' ? durationSeconds : null,
     breakEnabled,
     breakIntervalMinutes,
     breakDurationMinutes
@@ -228,13 +259,14 @@ async function startSession(): Promise<void> {
 
   const timerState: TimerState = {
     sessionId: data.id,
+    mode,
     groupId,
     groupTitle: group.title,
     taskId,
     taskTitle: task.title,
-    durationSeconds: durationMinutes * 60,
+    durationSeconds,
     focusSecondsElapsed: 0,
-    secondsLeft: durationMinutes * 60,
+    secondsLeft: durationSeconds,
     status: 'active',
     phase: 'focus',
     breakEnabled,
@@ -277,6 +309,7 @@ export async function restoreTimer(): Promise<void> {
 
     const timerState: TimerState = {
       ...storedState,
+      mode: storedState.mode ?? 'countdown',
       status: data.status as 'active' | 'paused'
     };
     setTimerState(timerState);
@@ -316,8 +349,24 @@ export function initializeTimer(): void {
       return;
     }
 
+    updateModeFields();
     openDialog(getElement<HTMLDialogElement>('session-dialog'));
   });
+
+  document
+    .querySelectorAll<HTMLInputElement>('input[name="session-mode"]')
+    .forEach((input) => {
+      input.addEventListener('change', updateModeFields);
+    });
+
+  document.querySelectorAll<HTMLButtonElement>('[data-duration]').forEach(
+    (button) => {
+      button.addEventListener('click', () => {
+        getElement<HTMLInputElement>('session-duration').value =
+          button.dataset.duration ?? '25';
+      });
+    }
+  );
 
   getElement<HTMLSelectElement>('session-group').addEventListener(
     'change',
@@ -389,8 +438,15 @@ export function initializeTimer(): void {
   });
 
   getElement('timer-stop').addEventListener('click', () => {
-    if (window.confirm('Остановить текущую фокус-сессию?')) {
-      void finishSession('cancelled');
+    const timerState = getTimerState();
+
+    if (
+      timerState &&
+      window.confirm('Остановить текущую фокус-сессию?')
+    ) {
+      void finishSession(
+        timerState.mode === 'stopwatch' ? 'completed' : 'cancelled'
+      );
     }
   });
 }

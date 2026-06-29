@@ -1,9 +1,12 @@
 import { supabaseClient } from '../lib/supabaseClient';
+import type { TimerMode } from '../types/focus';
 
 type CreateSessionInput = {
   userId: string;
   groupId: string;
   taskId: string;
+  mode: TimerMode;
+  plannedDurationSeconds: number | null;
   breakEnabled: boolean;
   breakIntervalMinutes: number;
   breakDurationMinutes: number;
@@ -12,7 +15,9 @@ type CreateSessionInput = {
 export function fetchFinishedSessions() {
   return supabaseClient
     .from('focus_sessions')
-    .select('id,started_at,duration_seconds,status')
+    .select(
+      'id,started_at,duration_seconds,timer_mode,planned_duration_seconds,status'
+    )
     .in('status', ['completed', 'cancelled'])
     .not('duration_seconds', 'is', null)
     .order('started_at', { ascending: false });
@@ -35,6 +40,8 @@ export function createSession(input: CreateSessionInput) {
       focus_task_id: input.taskId,
       started_at: new Date().toISOString(),
       status: 'active',
+      timer_mode: input.mode,
+      planned_duration_seconds: input.plannedDurationSeconds,
       break_enabled: input.breakEnabled,
       break_interval_minutes: input.breakEnabled
         ? input.breakIntervalMinutes

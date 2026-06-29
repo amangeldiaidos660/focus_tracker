@@ -1,3 +1,5 @@
+export type TimerMode = 'countdown' | 'stopwatch';
+
 export type FocusGroup = {
   id: string;
   user_id: string;
@@ -20,11 +22,14 @@ export type FocusSession = {
   id: string;
   started_at: string;
   duration_seconds: number | null;
+  timer_mode: TimerMode;
+  planned_duration_seconds: number | null;
   status: 'active' | 'paused' | 'completed' | 'cancelled';
 };
 
 export type TimerState = {
   sessionId: string;
+  mode: TimerMode;
   groupId: string;
   groupTitle: string;
   taskId: string;
