@@ -1,36 +1,19 @@
 ---
 import { iconSvg } from '../../shared/icons';
+import '../../styles/dashboard-fixes.css';
 ---
 
 <section class="panel focus-card">
-  <div class="section-kicker">
-    <span set:html={iconSvg('clock')}></span>
-    <span>Сегодня в фокусе</span>
-  </div>
-
-  <div class="focus-ring">
+  <div class="focus-ring clock-only">
     <div class="focus-ring-content">
-      <span class="focus-ring-label">Общее время</span>
-      <strong id="dashboard-today-time" class="focus-ring-time">00:00</strong>
-      <span class="status-pill">
-        <span class="status-dot"></span>
-        Готовы начать
-      </span>
+      <strong id="dashboard-current-time" class="focus-ring-time">00:00</strong>
     </div>
   </div>
 
-  <p id="dashboard-today-change" class="focus-card-copy">
-    Выберите ресурс и настройте новую фокус-сессию.
-  </p>
-
-  <div class="focus-actions">
+  <div class="focus-actions single-action">
     <button id="open-session" data-open-session class="button-primary" type="button">
       <span set:html={iconSvg('play')}></span>
       Начать фокус
-    </button>
-    <button data-open-session class="button-secondary" type="button">
-      <span set:html={iconSvg('sliders')}></span>
-      Настроить таймер
     </button>
   </div>
 </section>

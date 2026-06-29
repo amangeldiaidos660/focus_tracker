@@ -1,0 +1,172 @@
+.hidden {
+  display: none !important;
+}
+
+.focus-card {
+  justify-content: center;
+}
+
+.focus-ring.clock-only {
+  margin-top: 12px;
+}
+
+.focus-ring.clock-only .focus-ring-time {
+  font-size: clamp(3rem, 5.5vw, 4.5rem);
+}
+
+.focus-actions.single-action {
+  margin-top: 20px;
+}
+
+.resource-list {
+  overflow: visible;
+}
+
+.resource-row {
+  background: color-mix(in srgb, var(--bg-soft) 62%, transparent);
+}
+
+.resource-row:first-child {
+  border-radius: 8px 8px 0 0;
+}
+
+.resource-row:last-child {
+  border-radius: 0 0 8px 8px;
+}
+
+.resource-row:only-child {
+  border-radius: 8px;
+}
+
+.action-menu[open] {
+  z-index: 50;
+}
+
+.action-menu-popover {
+  z-index: 60;
+}
+
+.mode-option > span span {
+  display: inline-flex;
+  min-height: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: inherit;
+}
+
+.mode-option > span span .app-icon {
+  width: 1.1rem;
+  height: 1.1rem;
+}
+
+:root[data-theme='light'] .resource-row,
+:root[data-theme='light'] .stat-card,
+:root[data-theme='light'] .activity-panel,
+:root[data-theme='light'] .group-card {
+  background: rgba(247, 250, 255, 0.92);
+}
+
+:root[data-theme='light'] .focus-ring {
+  background:
+    radial-gradient(circle, #fff 65%, transparent 66%),
+    conic-gradient(from 215deg, var(--accent-bright) 0 72%, #cfe1f7 72% 88%, transparent 88% 100%);
+}
+
+:root[data-theme='light'] .mode-option > span,
+:root[data-theme='light'] .field-input,
+:root[data-theme='light'] .period-select {
+  background: #f8fbff;
+}
+
+:root[data-theme='light'] .text-slate-400,
+:root[data-theme='light'] .text-slate-500 {
+  color: var(--muted);
+}
+
+.bar-chart[data-range='month'] {
+  gap: 3px;
+}
+
+.bar-chart[data-range='month'] .bar-fill {
+  width: min(10px, 80%);
+}
+
+.bar-chart[data-range='year'] {
+  gap: 7px;
+}
+
+.activity-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.activity-year-select {
+  min-width: 88px;
+}
+
+.activity-chart {
+  min-width: 860px;
+}
+
+.activity-months {
+  display: grid;
+  grid-template-columns: repeat(var(--heat-weeks, 53), minmax(10px, 1fr));
+  gap: 4px;
+  margin: 0 0 7px 34px;
+  color: var(--muted);
+  font-size: 0.6rem;
+}
+
+.activity-layout {
+  min-width: 0;
+  grid-template-columns: 26px minmax(0, 1fr);
+}
+
+.activity-heatmap {
+  width: 100%;
+  grid-auto-columns: auto;
+  grid-template-columns: repeat(var(--heat-weeks, 53), minmax(10px, 1fr));
+  grid-template-rows: repeat(7, auto);
+  gap: 4px;
+}
+
+.heat-cell {
+  width: auto;
+  height: auto;
+  aspect-ratio: 1;
+  border-radius: 2px;
+}
+
+.heat-cell.is-outside {
+  background: transparent;
+  box-shadow: none;
+}
+
+.heatmap-footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 6px;
+  margin-top: 11px;
+  color: var(--muted);
+  font-size: 0.62rem;
+}
+
+.heatmap-footer .heat-cell {
+  width: 11px;
+  height: 11px;
+}
+
+@media (max-width: 640px) {
+  .focus-card {
+    min-height: 430px;
+  }
+
+  .activity-chart {
+    min-width: 760px;
+  }
+}

@@ -8,6 +8,7 @@ import { iconSvg } from '../../shared/icons';
     <select id="stats-period" class="period-select" aria-label="Период статистики">
       <option value="week">Неделя</option>
       <option value="month">Месяц</option>
+      <option value="year">Год</option>
     </select>
   </div>
 
@@ -21,7 +22,7 @@ import { iconSvg } from '../../shared/icons';
     <article class="stat-card">
       <div class="section-kicker">
         <span set:html={iconSvg('chart')}></span>
-        Время по дням
+        <span id="bar-chart-title">Время по дням</span>
       </div>
       <div id="weekly-bars" class="bar-chart"></div>
     </article>
@@ -36,17 +37,34 @@ import { iconSvg } from '../../shared/icons';
   </div>
 
   <div class="activity-panel">
-    <div class="section-kicker">
-      <span set:html={iconSvg('layers')}></span>
-      Активность за последние 13 недель
-    </div>
-    <div class="activity-scroll">
-      <div class="activity-layout">
-        <div class="activity-weekdays" aria-hidden="true">
-          <span>Пн</span><span></span><span>Ср</span><span></span><span>Пт</span><span></span><span>Вс</span>
-        </div>
-        <div id="activity-heatmap" class="activity-heatmap"></div>
+    <div class="activity-header">
+      <div class="section-kicker">
+        <span set:html={iconSvg('layers')}></span>
+        Активность за год
       </div>
+      <select id="activity-year" class="period-select activity-year-select" aria-label="Год активности"></select>
+    </div>
+
+    <div class="activity-scroll">
+      <div id="activity-chart" class="activity-chart">
+        <div id="activity-months" class="activity-months"></div>
+        <div class="activity-layout">
+          <div class="activity-weekdays" aria-hidden="true">
+            <span>Пн</span><span></span><span>Ср</span><span></span><span>Пт</span><span></span><span>Вс</span>
+          </div>
+          <div id="activity-heatmap" class="activity-heatmap"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="heatmap-footer" aria-hidden="true">
+      <span>Меньше</span>
+      <span class="heat-cell heat-level-0"></span>
+      <span class="heat-cell heat-level-1"></span>
+      <span class="heat-cell heat-level-2"></span>
+      <span class="heat-cell heat-level-3"></span>
+      <span class="heat-cell heat-level-4"></span>
+      <span>Больше</span>
     </div>
   </div>
 </section>

@@ -22,8 +22,26 @@ function getInitials(name: string): string {
     .join('');
 }
 
+function initializeKazakhstanClock(): void {
+  const formatter = new Intl.DateTimeFormat('ru-RU', {
+    timeZone: 'Asia/Qyzylorda',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false
+  });
+  const updateClock = () => {
+    getElement('dashboard-current-time').textContent = formatter.format(
+      new Date()
+    );
+  };
+
+  updateClock();
+  window.setInterval(updateClock, 30_000);
+}
+
 async function initialize(): Promise<void> {
   initializeTheme();
+  initializeKazakhstanClock();
 
   const { data, error } = await supabaseClient.auth.getSession();
   const user = data.session?.user;
@@ -34,7 +52,6 @@ async function initialize(): Promise<void> {
   }
 
   setUserId(user.id);
-
   const displayName =
     user.user_metadata?.full_name ?? user.email?.split('@')[0] ?? 'Пользователь';
   getElement('user-name').textContent = displayName;
@@ -44,14 +61,6 @@ async function initialize(): Promise<void> {
   initializeDialogControls();
   initializeGroups(openSessionSetup);
   initializeTimer();
-
-  document
-    .querySelectorAll<HTMLElement>('[data-open-session]:not(#open-session)')
-    .forEach((button) => {
-      button.addEventListener('click', () => {
-        getElement<HTMLButtonElement>('open-session').click();
-      });
-    });
 
   try {
     await loadGroupsAndTasks();
