@@ -1,56 +1,35 @@
 import { getElement } from '../../shared/dom';
-import { formatClock, formatDuration } from '../../shared/formatters';
+import { formatClock } from '../../shared/formatters';
 import type { TimerState } from '../../types/focus';
-
-function getNextBreakLabel(timerState: TimerState): string {
-  if (!timerState.breakEnabled) {
-    return 'Не запланирован';
-  }
-
-  if (timerState.phase === 'break') {
-    return `${formatClock(timerState.secondsLeft)} до фокуса`;
-  }
-
-  const seconds = Math.max(
-    0,
-    timerState.nextBreakAt - timerState.focusSecondsElapsed
-  );
-
-  if (
-    timerState.mode === 'countdown' &&
-    timerState.focusSecondsElapsed + seconds >= timerState.durationSeconds
-  ) {
-    return 'После завершения';
-  }
-
-  return formatClock(seconds);
-}
 
 export function updateTimerView(timerState: TimerState): void {
   const modeLabel =
     timerState.mode === 'countdown' ? 'На время' : 'Без лимита';
   const phaseLabel = timerState.phase === 'focus' ? 'Фокус активен' : 'Перерыв';
+  const breakCard = getElement('timer-next-break-card');
 
+  getElement('timer-overlay').dataset.phase = timerState.phase;
   getElement('timer-mode').textContent = `${modeLabel} · ${phaseLabel}`;
-  getElement('timer-task-title').textContent = timerState.taskTitle;
-  getElement('timer-group-title').textContent = timerState.groupTitle;
   getElement('timer-clock').textContent = formatClock(timerState.secondsLeft);
   getElement('timer-message').textContent =
     timerState.status === 'paused'
       ? 'Сессия поставлена на паузу'
       : timerState.phase === 'focus'
         ? 'Сохраняйте внимание на выбранном ресурсе'
-        : 'Отдохните — фокус продолжится автоматически';
-  getElement('timer-next-break').textContent = getNextBreakLabel(timerState);
-  getElement('timer-session-mode').textContent = modeLabel;
-  getElement('timer-focused-value').textContent = formatDuration(
-    timerState.focusSecondsElapsed
-  );
-  getElement('timer-break-detail').textContent = timerState.breakEnabled
-    ? `Каждые ${formatDuration(timerState.breakIntervalSeconds)} · ${formatDuration(
-        timerState.breakDurationSeconds
-      )}`
-    : 'Выключены';
+        : 'Восстановите силы перед следующим отрезком фокуса';
+  breakCard.classList.toggle('hidden', !timerState.breakEnabled);
+
+  if (timerState.breakEnabled) {
+    const breakSeconds =
+      timerState.phase === 'break'
+        ? timerState.secondsLeft
+        : Math.max(0, timerState.nextBreakAt - timerState.focusSecondsElapsed);
+
+    getElement('timer-next-break-label').textContent =
+      timerState.phase === 'break' ? 'До возвращения к фокусу' : 'Следующий перерыв';
+    getElement('timer-next-break').textContent = formatClock(breakSeconds);
+  }
+
   getElement('timer-pause').classList.toggle(
     'hidden',
     timerState.status === 'paused'

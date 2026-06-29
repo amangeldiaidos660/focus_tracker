@@ -61,30 +61,6 @@
   height: 1.1rem;
 }
 
-:root[data-theme='light'] .resource-row,
-:root[data-theme='light'] .stat-card,
-:root[data-theme='light'] .activity-panel,
-:root[data-theme='light'] .group-card {
-  background: rgba(247, 250, 255, 0.92);
-}
-
-:root[data-theme='light'] .focus-ring {
-  background:
-    radial-gradient(circle, #fff 65%, transparent 66%),
-    conic-gradient(from 215deg, var(--accent-bright) 0 72%, #cfe1f7 72% 88%, transparent 88% 100%);
-}
-
-:root[data-theme='light'] .mode-option > span,
-:root[data-theme='light'] .field-input,
-:root[data-theme='light'] .period-select {
-  background: #f8fbff;
-}
-
-:root[data-theme='light'] .text-slate-400,
-:root[data-theme='light'] .text-slate-500 {
-  color: var(--muted);
-}
-
 .bar-chart[data-range='month'] {
   gap: 3px;
 }
@@ -146,6 +122,11 @@
   box-shadow: none;
 }
 
+.heat-cell.is-today {
+  outline: 1px solid var(--accent-bright);
+  outline-offset: 1px;
+}
+
 .heatmap-footer {
   display: flex;
   align-items: center;
@@ -161,6 +142,147 @@
   height: 11px;
 }
 
+.timer-workspace-simple {
+  display: grid;
+  grid-template-columns: 1fr;
+  place-items: center;
+}
+
+.timer-center-only {
+  width: min(760px, 100%);
+}
+
+.timer-center-only .timer-clock {
+  font-size: clamp(6rem, 14vw, 11rem);
+}
+
+.timer-controls .app-icon {
+  width: 1.15rem;
+  height: 1.15rem;
+}
+
+.timer-overlay[data-phase='break'] .timer-mode,
+.timer-overlay[data-phase='break'] .next-break-card strong {
+  color: var(--accent-bright);
+}
+
+.timer-overlay[data-phase='break'] .timer-center-only {
+  position: relative;
+}
+
+.timer-overlay[data-phase='break'] .timer-center-only::before {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  top: 42%;
+  left: 50%;
+  width: min(560px, 88vw);
+  height: min(280px, 44vw);
+  transform: translate(-50%, -50%);
+  border-top: 12px solid var(--accent);
+  border-radius: 50% 50% 0 0;
+  opacity: 0.22;
+  filter: drop-shadow(0 0 18px rgba(47, 128, 255, 0.35));
+}
+
+.login-page {
+  display: grid;
+  min-height: 100vh;
+  place-items: center;
+  padding: 24px;
+  background:
+    radial-gradient(circle at 50% 20%, rgba(47, 128, 255, 0.14), transparent 30rem),
+    var(--bg);
+}
+
+.login-card {
+  width: min(470px, 100%);
+  padding: 34px;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: linear-gradient(145deg, rgba(14, 25, 43, 0.96), rgba(7, 14, 27, 0.96));
+  box-shadow: 0 28px 80px rgba(0, 0, 0, 0.42);
+}
+
+.login-brand {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  color: var(--text);
+  font-size: 0.82rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.login-heading {
+  margin-top: 38px;
+}
+
+.login-kicker {
+  color: var(--accent-bright);
+  font-size: 0.7rem;
+  font-weight: 750;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.login-heading h1 {
+  margin: 12px 0 0;
+  font-size: clamp(1.75rem, 5vw, 2.35rem);
+  font-weight: 670;
+  line-height: 1.14;
+}
+
+.login-heading p {
+  margin: 16px 0 0;
+  color: var(--muted);
+  font-size: 0.84rem;
+  line-height: 1.65;
+}
+
+.google-login-button {
+  display: flex;
+  width: 100%;
+  min-height: 48px;
+  align-items: center;
+  justify-content: center;
+  gap: 11px;
+  margin-top: 28px;
+  border: 1px solid var(--line-strong);
+  border-radius: 10px;
+  background: #f8fafc;
+  color: #172033;
+  font-size: 0.82rem;
+  font-weight: 680;
+  cursor: pointer;
+}
+
+.google-login-button:hover {
+  background: #fff;
+  transform: translateY(-1px);
+}
+
+.google-login-button svg {
+  width: 20px;
+  height: 20px;
+}
+
+.login-note,
+.login-error {
+  margin: 14px 0 0;
+  font-size: 0.68rem;
+  text-align: center;
+}
+
+.login-note {
+  color: var(--muted);
+}
+
+.login-error {
+  color: #f87171;
+}
+
 @media (max-width: 640px) {
   .focus-card {
     min-height: 430px;
@@ -168,5 +290,13 @@
 
   .activity-chart {
     min-width: 760px;
+  }
+
+  .login-card {
+    padding: 25px 21px;
+  }
+
+  .timer-center-only .timer-clock {
+    font-size: clamp(4.2rem, 24vw, 7rem);
   }
 }

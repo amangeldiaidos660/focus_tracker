@@ -1,6 +1,5 @@
 import { initializeGroups, loadGroupsAndTasks } from '../features/groups/groups';
 import { loadStatistics } from '../features/statistics/statistics';
-import { initializeTheme } from '../features/theme/theme';
 import {
   initializeTimer,
   openSessionSetup,
@@ -40,14 +39,15 @@ function initializeKazakhstanClock(): void {
 }
 
 async function initialize(): Promise<void> {
-  initializeTheme();
+  document.documentElement.dataset.theme = 'dark';
+  document.documentElement.style.colorScheme = 'dark';
   initializeKazakhstanClock();
 
   const { data, error } = await supabaseClient.auth.getSession();
   const user = data.session?.user;
 
   if (error || !user) {
-    window.location.href = '/login';
+    window.location.replace('/login');
     return;
   }
 

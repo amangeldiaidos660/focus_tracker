@@ -16,7 +16,6 @@ import { iconSvg } from '../../shared/icons';
     <article class="stat-card">
       <p class="stat-label">Общее время</p>
       <p id="stat-period-total" class="stat-value">0 мин</p>
-      <p id="stat-period-change" class="stat-change">Нет данных за прошлый период</p>
     </article>
 
     <article class="stat-card">
@@ -40,7 +39,7 @@ import { iconSvg } from '../../shared/icons';
     <div class="activity-header">
       <div class="section-kicker">
         <span set:html={iconSvg('layers')}></span>
-        Активность за год
+        <span id="activity-title">Активность за последний год</span>
       </div>
       <select id="activity-year" class="period-select activity-year-select" aria-label="Год активности"></select>
     </div>

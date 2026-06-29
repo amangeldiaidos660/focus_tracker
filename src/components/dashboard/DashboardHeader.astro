@@ -8,20 +8,11 @@ import { iconSvg } from '../../shared/icons';
     <span>Focus Tracker</span>
   </a>
 
-  <div class="topbar-actions">
-    <button id="theme-toggle" class="theme-toggle" type="button" aria-label="Переключить тему">
-      <span set:html={iconSvg('moon')}></span>
-      <span class="theme-track"></span>
-      <span class="sun-icon" set:html={iconSvg('sun')}></span>
-    </button>
-
-    <a class="profile-link" href="/settings">
-      <span class="profile-avatar">
-        <img id="user-avatar" class="hidden" alt="" />
-        <span id="user-initials">FT</span>
-      </span>
-      <span id="user-name" class="profile-name"></span>
-      <span set:html={iconSvg('chevron-down')}></span>
-    </a>
-  </div>
+  <a class="profile-link" href="/settings">
+    <span class="profile-avatar">
+      <span id="user-initials">FT</span>
+    </span>
+    <span id="user-name" class="profile-name"></span>
+    <span set:html={iconSvg('chevron-down')}></span>
+  </a>
 </header>

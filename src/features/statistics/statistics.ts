@@ -9,18 +9,8 @@ type Period = 'week' | 'month' | 'year';
 const chartColors = ['#3f9cff', '#8b5cf6', '#f5c84c', '#22c55e', '#f97316'];
 const weekDayLabels = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'];
 const monthLabels = [
-  'Янв',
-  'Фев',
-  'Мар',
-  'Апр',
-  'Май',
-  'Июн',
-  'Июл',
-  'Авг',
-  'Сен',
-  'Окт',
-  'Ноя',
-  'Дек'
+  'Янв', 'Фев', 'Мар', 'Апр', 'Май', 'Июн',
+  'Июл', 'Авг', 'Сен', 'Окт', 'Ноя', 'Дек'
 ];
 
 let sessions: FocusSession[] = [];
@@ -37,17 +27,17 @@ function startOfWeek(date: Date): Date {
   return new Date(date.getFullYear(), date.getMonth(), date.getDate() - day);
 }
 
+function addDays(date: Date, days: number): Date {
+  const result = new Date(date);
+  result.setDate(result.getDate() + days);
+  return result;
+}
+
 function getDateKey(date: Date): string {
   const year = date.getFullYear();
   const month = String(date.getMonth() + 1).padStart(2, '0');
   const day = String(date.getDate()).padStart(2, '0');
   return `${year}-${month}-${day}`;
-}
-
-function addDays(date: Date, days: number): Date {
-  const result = new Date(date);
-  result.setDate(result.getDate() + days);
-  return result;
 }
 
 function sumBetween(start: Date, end: Date): number {
@@ -59,39 +49,10 @@ function sumBetween(start: Date, end: Date): number {
   }, 0);
 }
 
-function getPeriodDays(): number {
-  return selectedPeriod === 'week' ? 7 : selectedPeriod === 'month' ? 30 : 365;
-}
-
-function getPeriodRange(now: Date): {
-  start: Date;
-  end: Date;
-  previousStart: Date;
-} {
+function getPeriodRange(now: Date): { start: Date; end: Date } {
   const end = addDays(startOfDay(now), 1);
-  const days = getPeriodDays();
-  const start = addDays(end, -days);
-  const previousStart = addDays(start, -days);
-  return { start, end, previousStart };
-}
-
-function renderSummary(now: Date): void {
-  const { start, end, previousStart } = getPeriodRange(now);
-  const currentTotal = sumBetween(start, end);
-  const previousTotal = sumBetween(previousStart, start);
-  const changeElement = getElement('stat-period-change');
-
-  getElement('stat-period-total').textContent = formatDuration(currentTotal);
-
-  if (previousTotal === 0) {
-    changeElement.textContent = 'Нет данных за прошлый период';
-    changeElement.classList.remove('is-positive');
-    return;
-  }
-
-  const percent = Math.round(((currentTotal - previousTotal) / previousTotal) * 100);
-  changeElement.textContent = `${percent >= 0 ? '+' : ''}${percent}% к прошлому периоду`;
-  changeElement.classList.toggle('is-positive', percent >= 0);
+  const days = selectedPeriod === 'week' ? 7 : selectedPeriod === 'month' ? 30 : 365;
+  return { start: addDays(end, -days), end };
 }
 
 function getDailyTotals(): Map<string, number> {
@@ -118,12 +79,12 @@ function getBarData(now: Date, dailyTotals: Map<string, number>) {
     });
   }
 
-  const days = selectedPeriod === 'week' ? 7 : 30;
+  const dayCount = selectedPeriod === 'week' ? 7 : 30;
 
-  return Array.from({ length: days }, (_, index) => {
-    const date = addDays(startOfDay(now), -(days - 1 - index));
+  return Array.from({ length: dayCount }, (_, index) => {
+    const date = addDays(startOfDay(now), -(dayCount - 1 - index));
     const showLabel =
-      selectedPeriod === 'week' || index % 5 === 0 || index === days - 1;
+      selectedPeriod === 'week' || index % 5 === 0 || index === dayCount - 1;
 
     return {
       label: showLabel
@@ -135,6 +96,13 @@ function getBarData(now: Date, dailyTotals: Map<string, number>) {
       seconds: dailyTotals.get(getDateKey(date)) ?? 0
     };
   });
+}
+
+function renderSummary(now: Date): void {
+  const { start, end } = getPeriodRange(now);
+  getElement('stat-period-total').textContent = formatDuration(
+    sumBetween(start, end)
+  );
 }
 
 function renderBars(now: Date, dailyTotals: Map<string, number>): void {
@@ -152,9 +120,7 @@ function renderBars(now: Date, dailyTotals: Map<string, number>): void {
 
       return `
         <div class="bar-column" title="${escapeHtml(item.title)}: ${formatDuration(item.seconds)}">
-          <div class="bar-track">
-            <div class="bar-fill" style="height:${height}%"></div>
-          </div>
+          <div class="bar-track"><div class="bar-fill" style="height:${height}%"></div></div>
           <span>${item.label || '&nbsp;'}</span>
         </div>
       `;
@@ -192,12 +158,13 @@ function renderDistribution(now: Date): void {
   }
 
   let offset = 0;
-  const stops = entries.map(([, seconds], index) => {
-    const startPercent = offset;
-    offset += (seconds / total) * 100;
-    return `${chartColors[index]} ${startPercent}% ${offset}%`;
-  });
-  chart.style.background = `conic-gradient(${stops.join(',')})`;
+  chart.style.background = `conic-gradient(${entries
+    .map(([, seconds], index) => {
+      const startPercent = offset;
+      offset += (seconds / total) * 100;
+      return `${chartColors[index]} ${startPercent}% ${offset}%`;
+    })
+    .join(',')})`;
   legend.innerHTML = entries
     .map(([groupId, seconds], index) => {
       const title = groups.get(groupId)?.title ?? 'Без группы';
@@ -224,14 +191,13 @@ function getAvailableYears(): number[] {
 }
 
 function renderYearOptions(): void {
-  const select = getElement<HTMLSelectElement>('activity-year');
   const years = getAvailableYears();
 
   if (!years.includes(selectedActivityYear)) {
     selectedActivityYear = years[0];
   }
 
-  select.innerHTML = years
+  getElement<HTMLSelectElement>('activity-year').innerHTML = years
     .map(
       (year) =>
         `<option value="${year}" ${year === selectedActivityYear ? 'selected' : ''}>${year}</option>`
@@ -239,47 +205,82 @@ function renderYearOptions(): void {
     .join('');
 }
 
+function getHeatmapRange(): { start: Date; end: Date; rolling: boolean } {
+  const currentYear = new Date().getFullYear();
+
+  if (selectedActivityYear === currentYear) {
+    const end = startOfDay(new Date());
+    return { start: addDays(end, -364), end, rolling: true };
+  }
+
+  return {
+    start: new Date(selectedActivityYear, 0, 1),
+    end: new Date(selectedActivityYear, 11, 31),
+    rolling: false
+  };
+}
+
+function getVisibleMonths(rangeStart: Date, rangeEnd: Date, gridStart: Date) {
+  const months: Array<{ label: string; column: number }> = [];
+  let cursor = new Date(rangeStart.getFullYear(), rangeStart.getMonth(), 1);
+
+  while (cursor <= rangeEnd) {
+    const marker = cursor < rangeStart ? rangeStart : cursor;
+    const column = Math.max(
+      1,
+      Math.floor(
+        (startOfWeek(marker).getTime() - gridStart.getTime()) / 604_800_000
+      ) + 1
+    );
+    months.push({ label: monthLabels[cursor.getMonth()], column });
+    cursor = new Date(cursor.getFullYear(), cursor.getMonth() + 1, 1);
+  }
+
+  return months;
+}
+
 function renderHeatmap(dailyTotals: Map<string, number>): void {
-  const yearStart = new Date(selectedActivityYear, 0, 1);
-  const yearEnd = new Date(selectedActivityYear, 11, 31);
-  const gridStart = startOfWeek(yearStart);
-  const gridEnd = addDays(startOfWeek(yearEnd), 6);
+  const { start, end, rolling } = getHeatmapRange();
+  const gridStart = startOfWeek(start);
+  const gridEnd = addDays(startOfWeek(end), 6);
   const dayCount =
     Math.round((gridEnd.getTime() - gridStart.getTime()) / 86_400_000) + 1;
   const weekCount = Math.ceil(dayCount / 7);
+  const todayKey = getDateKey(new Date());
   const days = Array.from({ length: dayCount }, (_, index) => {
     const date = addDays(gridStart, index);
-    const inside = date.getFullYear() === selectedActivityYear;
+    const visible = date >= start && date <= end;
     return {
       date,
-      inside,
-      seconds: inside ? dailyTotals.get(getDateKey(date)) ?? 0 : 0
+      visible,
+      seconds: visible ? dailyTotals.get(getDateKey(date)) ?? 0 : 0
     };
   });
   const maxValue = Math.max(...days.map((day) => day.seconds), 1);
   const chart = getElement<HTMLElement>('activity-chart');
 
   chart.style.setProperty('--heat-weeks', String(weekCount));
-  getElement('activity-months').innerHTML = monthLabels
-    .map((label, month) => {
-      const firstDay = new Date(selectedActivityYear, month, 1);
-      const weekIndex = Math.floor(
-        (startOfWeek(firstDay).getTime() - gridStart.getTime()) / 604_800_000
-      );
-      return `<span style="grid-column:${weekIndex + 1} / span 3">${label}</span>`;
-    })
+  getElement('activity-title').textContent = rolling
+    ? 'Активность за последний год'
+    : `Активность за ${selectedActivityYear} год`;
+  getElement('activity-months').innerHTML = getVisibleMonths(start, end, gridStart)
+    .map(
+      (month) =>
+        `<span style="grid-column:${month.column} / span 3">${month.label}</span>`
+    )
     .join('');
   getElement('activity-heatmap').innerHTML = days
     .map((day) => {
-      if (!day.inside) {
+      if (!day.visible) {
         return '<span class="heat-cell is-outside"></span>';
       }
 
       const ratio = day.seconds / maxValue;
       const level =
         day.seconds === 0 ? 0 : ratio < 0.25 ? 1 : ratio < 0.5 ? 2 : ratio < 0.75 ? 3 : 4;
+      const todayClass = getDateKey(day.date) === todayKey ? ' is-today' : '';
 
-      return `<span class="heat-cell heat-level-${level}" title="${day.date.toLocaleDateString(
+      return `<span class="heat-cell heat-level-${level}${todayClass}" title="${day.date.toLocaleDateString(
         'ru-RU'
       )}: ${formatDuration(day.seconds)}"></span>`;
     })

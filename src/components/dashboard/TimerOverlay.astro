@@ -3,21 +3,17 @@ import { iconSvg } from '../../shared/icons';
 ---
 
 <section id="timer-overlay" class="timer-overlay hidden">
-  <div class="timer-workspace">
-    <div class="timer-task-block">
-      <div class="timer-task-icon" set:html={iconSvg('book')}></div>
-      <h2 id="timer-task-title" class="timer-task-title"></h2>
-      <p id="timer-group-title" class="timer-group-title"></p>
-    </div>
-
-    <div class="timer-center">
-      <p id="timer-mode" class="timer-mode">На время · Фокус</p>
+  <div class="timer-workspace timer-workspace-simple">
+    <div class="timer-center timer-center-only">
+      <p id="timer-mode" class="timer-mode">На время · Фокус активен</p>
       <div id="timer-clock" class="timer-clock">25:00</div>
-      <p id="timer-message" class="timer-message"></p>
+      <p id="timer-message" class="timer-message">
+        Сохраняйте внимание на выбранном ресурсе
+      </p>
 
-      <div class="next-break-card">
-        <span>Следующий перерыв</span>
-        <strong id="timer-next-break">Не запланирован</strong>
+      <div id="timer-next-break-card" class="next-break-card hidden">
+        <span id="timer-next-break-label">Следующий перерыв</span>
+        <strong id="timer-next-break">00:00</strong>
       </div>
 
       <div class="timer-controls">
@@ -35,23 +31,5 @@ import { iconSvg } from '../../shared/icons';
         </button>
       </div>
     </div>
-
-    <aside class="panel session-summary">
-      <h3 class="section-title">Текущая сессия</h3>
-      <div class="session-summary-list">
-        <div class="session-summary-row">
-          <span>Режим</span>
-          <strong id="timer-session-mode">На время</strong>
-        </div>
-        <div class="session-summary-row">
-          <span>В фокусе</span>
-          <strong id="timer-focused-value">0 мин</strong>
-        </div>
-        <div class="session-summary-row">
-          <span>Перерывы</span>
-          <strong id="timer-break-detail">Выключены</strong>
-        </div>
-      </div>
-    </aside>
   </div>
 </section>
