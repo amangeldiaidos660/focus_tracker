@@ -18,7 +18,40 @@ import '../styles/global.css';
 
       <h1 class="mt-5 text-3xl font-semibold">Настройки</h1>
 
-      <div class="mt-6 rounded-xl border border-slate-800 bg-slate-900 p-5">
+      <section class="mt-6 rounded-xl border border-slate-800 bg-slate-900 p-5">
+        <h2 class="font-semibold">Уведомления</h2>
+        <p class="mt-2 text-sm text-slate-400">
+          Получайте сигнал о завершении фокуса, начале и окончании перерыва.
+        </p>
+
+        <label class="mt-5 flex items-start justify-between gap-5">
+          <span>
+            <span class="block font-medium">Системные уведомления</span>
+            <span id="notification-permission" class="mt-1 block text-sm text-slate-400"></span>
+          </span>
+          <input
+            id="notifications-enabled"
+            type="checkbox"
+            class="mt-1 h-5 w-5 shrink-0 accent-blue-500"
+          />
+        </label>
+
+        <label class="mt-5 flex items-start justify-between gap-5 border-t border-slate-800 pt-5">
+          <span>
+            <span class="block font-medium">Звуковые сигналы</span>
+            <span class="mt-1 block text-sm text-slate-400">
+              Работают независимо от разрешения системных уведомлений.
+            </span>
+          </span>
+          <input
+            id="sound-enabled"
+            type="checkbox"
+            class="mt-1 h-5 w-5 shrink-0 accent-blue-500"
+          />
+        </label>
+      </section>
+
+      <section class="mt-6 rounded-xl border border-slate-800 bg-slate-900 p-5">
         <h2 class="font-semibold">Аккаунт</h2>
         <p id="account-email" class="mt-2 text-sm text-slate-400"></p>
 
@@ -28,32 +61,9 @@ import '../styles/global.css';
         >
           Выйти из аккаунта
         </button>
-      </div>
+      </section>
     </main>
 
-    <script>
-      import { supabaseClient } from '../lib/supabaseClient';
-
-      const { data } = await supabaseClient.auth.getSession();
-      const user = data.session?.user;
-
-      if (!user) {
-        window.location.href = '/login';
-      } else {
-        const email = document.getElementById('account-email');
-
-        if (email) {
-          email.textContent = user.email ?? '';
-        }
-      }
-
-      document
-        .getElementById('btn-signout')
-        ?.addEventListener('click', async () => {
-          await supabaseClient.auth.signOut();
-          localStorage.removeItem('focus-tracker-active-session');
-          window.location.href = '/login';
-        });
-    </script>
+    <script src="../scripts/settings.ts"></script>
   </body>
 </html>

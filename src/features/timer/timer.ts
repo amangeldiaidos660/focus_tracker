@@ -1,3 +1,7 @@
+import {
+  sendTimerAlert
+} from '../notifications/notificationService';
+import { unlockTimerSound } from '../notifications/sound';
 import { loadStatistics } from '../statistics/statistics';
 import {
   createSession,
@@ -155,6 +159,9 @@ async function advanceTimer(): Promise<void> {
       timerState.mode === 'countdown' &&
       timerState.focusSecondsElapsed >= timerState.durationSeconds
     ) {
+      void sendTimerAlert('focus-complete', {
+        taskTitle: timerState.taskTitle
+      });
       await finishSession('completed');
       return;
     }
@@ -167,6 +174,10 @@ async function advanceTimer(): Promise<void> {
       timerState.phase = 'break';
       timerState.secondsLeft = timerState.breakDurationSeconds;
       timerState.nextBreakAt += timerState.breakIntervalSeconds;
+      void sendTimerAlert('break-start', {
+        taskTitle: timerState.taskTitle,
+        breakDurationSeconds: timerState.breakDurationSeconds
+      });
     }
   } else {
     timerState.secondsLeft = Math.max(0, timerState.secondsLeft - elapsed);
@@ -177,6 +188,9 @@ async function advanceTimer(): Promise<void> {
         timerState.mode === 'countdown'
           ? timerState.durationSeconds - timerState.focusSecondsElapsed
           : timerState.focusSecondsElapsed;
+      void sendTimerAlert('break-end', {
+        taskTitle: timerState.taskTitle
+      });
     }
   }
 
@@ -195,6 +209,8 @@ function startTimerLoop(): void {
 }
 
 async function startSession(): Promise<void> {
+  void unlockTimerSound();
+
   const mode = getSelectedMode();
   const groupId = getElement<HTMLSelectElement>('session-group').value;
   const taskId = getElement<HTMLSelectElement>('session-task').value;
