@@ -1,36 +1,21 @@
-<section class="mb-8">
-  <div class="mb-4 flex flex-wrap items-center justify-between gap-3">
-    <div>
-      <h2 class="text-xl font-semibold">Фокус-группы</h2>
-      <p class="mt-1 text-sm text-slate-400">
-        Направления обучения и связанные с ними ресурсы.
-      </p>
-    </div>
+---
+import { iconSvg } from '../../shared/icons';
+---
 
-    <button
-      id="open-group-form"
-      class="rounded-lg bg-slate-100 px-4 py-2 text-sm font-medium text-slate-950 hover:bg-white"
-    >
+<section class="panel groups-panel">
+  <div class="section-header">
+    <h2 class="section-title">Фокус-группы</h2>
+    <button id="open-group-form" class="button-primary px-3 py-2 text-xs" type="button">
+      <span set:html={iconSvg('plus')}></span>
       Добавить группу
     </button>
   </div>
 
-  <div
-    id="groups-loading"
-    class="rounded-xl border border-slate-800 p-6 text-center text-slate-400"
-  >
-    Загрузка групп...
+  <div id="groups-loading" class="loading-state">Загрузка групп...</div>
+
+  <div id="groups-empty" class="empty-state hidden">
+    Создайте первую фокус-группу и добавьте в неё учебные ресурсы.
   </div>
 
-  <div
-    id="groups-empty"
-    class="hidden rounded-xl border border-dashed border-slate-700 p-8 text-center"
-  >
-    <p class="text-slate-300">У вас пока нет фокус-групп.</p>
-    <p class="mt-1 text-sm text-slate-500">
-      Создайте первую группу, затем добавьте в неё учебные ресурсы.
-    </p>
-  </div>
-
-  <div id="groups-list" class="space-y-4"></div>
+  <div id="groups-list" class="groups-list"></div>
 </section>

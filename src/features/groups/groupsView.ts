@@ -1,5 +1,12 @@
 import { escapeHtml } from '../../shared/dom';
+import { iconSvg, type IconName } from '../../shared/icons';
 import { getTasks, groups } from '../../stores/focusStore';
+
+const groupIcons: IconName[] = ['book', 'code', 'layers', 'chart'];
+
+function getGroupIcon(index: number): IconName {
+  return groupIcons[index % groupIcons.length];
+}
 
 export function renderTasks(groupId: string): void {
   const container = document.querySelector<HTMLElement>(
@@ -14,85 +21,63 @@ export function renderTasks(groupId: string): void {
 
   if (tasks.length === 0) {
     container.innerHTML = `
-      <p class="rounded-lg border border-dashed border-slate-700 p-4 text-sm text-slate-500">
-        В этой группе пока нет задач.
-      </p>
+      <div class="empty-state py-6">
+        В этой группе пока нет ресурсов.
+      </div>
     `;
     return;
   }
 
-  container.innerHTML = tasks
-    .map((task) => {
-      const description = task.description
-        ? `<p class="mt-2 text-sm text-slate-400">${escapeHtml(
-            task.description
-          )}</p>`
-        : '';
+  container.innerHTML = `
+    <div class="resource-list">
+      ${tasks
+        .map((task, index) => {
+          const startButton =
+            task.status === 'active'
+              ? `
+                <button
+                  data-action="start-task"
+                  data-group-id="${groupId}"
+                  data-task-id="${task.id}"
+                  class="resource-play"
+                  type="button"
+                  aria-label="Начать фокус: ${escapeHtml(task.title)}"
+                >
+                  ${iconSvg('play')}
+                </button>
+              `
+              : '<span></span>';
+          const resourceIcon = index % 3 === 0 ? 'link' : index % 3 === 1 ? 'code' : 'book';
 
-      const archiveLabel =
-        task.status === 'archived'
-          ? '<span class="rounded bg-slate-700 px-2 py-0.5 text-xs text-slate-300">Архив</span>'
-          : '';
-
-      const startButton =
-        task.status === 'active'
-          ? `
-            <button
-              data-action="start-task"
-              data-group-id="${groupId}"
-              data-task-id="${task.id}"
-              class="rounded-lg bg-blue-500 px-3 py-2 text-sm font-medium hover:bg-blue-400"
-            >
-              Начать фокус
-            </button>
-          `
-          : '';
-
-      return `
-        <article class="flex flex-col justify-between gap-4 rounded-lg border border-slate-800 bg-slate-950/60 p-4 sm:flex-row sm:items-center">
-          <div class="min-w-0">
-            <div class="flex flex-wrap items-center gap-2">
-              <h4 class="font-medium">${escapeHtml(task.title)}</h4>
-              ${archiveLabel}
-            </div>
-
-            <a
-              class="mt-1 block truncate text-sm text-blue-400 hover:text-blue-300"
-              href="${escapeHtml(task.url)}"
-              target="_blank"
-              rel="noreferrer"
-            >
-              ${escapeHtml(task.url)}
-            </a>
-
-            ${description}
-          </div>
-
-          <div class="flex shrink-0 flex-wrap gap-2">
-            ${startButton}
-
-            <button
-              data-action="toggle-task"
-              data-group-id="${groupId}"
-              data-task-id="${task.id}"
-              class="rounded-lg border border-slate-700 px-3 py-2 text-sm hover:border-slate-500"
-            >
-              ${task.status === 'active' ? 'В архив' : 'Вернуть'}
-            </button>
-
-            <button
-              data-action="delete-task"
-              data-group-id="${groupId}"
-              data-task-id="${task.id}"
-              class="rounded-lg border border-red-900 px-3 py-2 text-sm text-red-400 hover:border-red-700"
-            >
-              Удалить
-            </button>
-          </div>
-        </article>
-      `;
-    })
-    .join('');
+          return `
+            <article class="resource-row ${task.status === 'archived' ? 'is-archived' : ''}">
+              <span class="resource-icon">${iconSvg(resourceIcon)}</span>
+              <div class="resource-main">
+                <div class="resource-title">${escapeHtml(task.title)}</div>
+                <a class="resource-url" href="${escapeHtml(task.url)}" target="_blank" rel="noreferrer">
+                  ${escapeHtml(task.url)}
+                </a>
+              </div>
+              ${startButton}
+              <details class="action-menu">
+                <summary aria-label="Действия с ресурсом">${iconSvg('more')}</summary>
+                <div class="action-menu-popover">
+                  <button data-action="toggle-task" data-group-id="${groupId}" data-task-id="${task.id}" type="button">
+                    ${iconSvg('archive')}
+                    ${task.status === 'active' ? 'Перенести в архив' : 'Вернуть из архива'}
+                  </button>
+                  <button class="danger-action" data-action="delete-task" data-group-id="${groupId}" data-task-id="${task.id}" type="button">
+                    ${iconSvg('trash')}
+                    Удалить ресурс
+                  </button>
+                </div>
+              </details>
+            </article>
+          `;
+        })
+        .join('')}
+    </div>
+  `;
 }
 
 export function renderGroups(): void {
@@ -108,55 +93,37 @@ export function renderGroups(): void {
   groupsEmpty.classList.toggle('hidden', groups.size > 0);
 
   groupsList.innerHTML = Array.from(groups.values())
-    .map((group) => {
+    .map((group, index) => {
+      const expanded = index === 0;
+
       return `
-        <article class="overflow-hidden rounded-xl border border-slate-800 bg-slate-900">
-          <div class="flex flex-wrap items-center justify-between gap-3 p-4">
-            <button
-              data-action="toggle-group"
-              data-group-id="${group.id}"
-              class="flex min-w-0 flex-1 items-center gap-3 text-left"
-            >
-              <span
-                data-chevron="${group.id}"
-                class="text-slate-500 transition-transform"
-              >
-                ›
-              </span>
-
-              <span class="truncate font-semibold">
-                ${escapeHtml(group.title)}
-              </span>
-
-              <span class="rounded-full bg-slate-800 px-2 py-0.5 text-xs text-slate-400">
-                ${getTasks(group.id).length}
+        <article class="group-card">
+          <div class="group-heading">
+            <button data-action="toggle-group" data-group-id="${group.id}" class="group-toggle" type="button">
+              <span class="group-icon">${iconSvg(getGroupIcon(index))}</span>
+              <span class="group-title">${escapeHtml(group.title)}</span>
+              <span class="group-count">${getTasks(group.id).length}</span>
+              <span data-chevron="${group.id}" class="group-chevron ${expanded ? 'rotate-90' : ''}">
+                ${iconSvg('chevron-down')}
               </span>
             </button>
-
-            <div class="flex gap-2">
-              <button
-                data-action="add-task"
-                data-group-id="${group.id}"
-                class="rounded-lg border border-slate-700 px-3 py-2 text-sm hover:border-slate-500"
-              >
-                Добавить задачу
-              </button>
-
-              <button
-                data-action="delete-group"
-                data-group-id="${group.id}"
-                class="rounded-lg border border-red-900 px-3 py-2 text-sm text-red-400 hover:border-red-700"
-              >
-                Удалить
-              </button>
-            </div>
+            <details class="action-menu">
+              <summary aria-label="Действия с группой">${iconSvg('more')}</summary>
+              <div class="action-menu-popover">
+                <button class="danger-action" data-action="delete-group" data-group-id="${group.id}" type="button">
+                  ${iconSvg('trash')}
+                  Удалить группу
+                </button>
+              </div>
+            </details>
           </div>
 
-          <div
-            data-group-content="${group.id}"
-            class="hidden border-t border-slate-800 p-4"
-          >
-            <div data-tasks="${group.id}" class="space-y-3"></div>
+          <div data-group-content="${group.id}" class="group-content ${expanded ? '' : 'hidden'}">
+            <div data-tasks="${group.id}"></div>
+            <button data-action="add-task" data-group-id="${group.id}" class="add-resource" type="button">
+              ${iconSvg('plus')}
+              Добавить ресурс
+            </button>
           </div>
         </article>
       `;

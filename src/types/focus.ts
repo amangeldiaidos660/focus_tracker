@@ -20,6 +20,7 @@ export type FocusTask = {
 
 export type FocusSession = {
   id: string;
+  focus_group_id: string;
   started_at: string;
   duration_seconds: number | null;
   timer_mode: TimerMode;

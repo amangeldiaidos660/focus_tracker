@@ -16,7 +16,7 @@ export function fetchFinishedSessions() {
   return supabaseClient
     .from('focus_sessions')
     .select(
-      'id,started_at,duration_seconds,timer_mode,planned_duration_seconds,status'
+      'id,focus_group_id,started_at,duration_seconds,timer_mode,planned_duration_seconds,status'
     )
     .in('status', ['completed', 'cancelled'])
     .not('duration_seconds', 'is', null)

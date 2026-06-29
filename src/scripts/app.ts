@@ -1,5 +1,6 @@
 import { initializeGroups, loadGroupsAndTasks } from '../features/groups/groups';
 import { loadStatistics } from '../features/statistics/statistics';
+import { initializeTheme } from '../features/theme/theme';
 import {
   initializeTimer,
   openSessionSetup,
@@ -12,7 +13,18 @@ import { getElement } from '../shared/dom';
 import { showNotice } from '../shared/notice';
 import { setUserId } from '../stores/focusStore';
 
+function getInitials(name: string): string {
+  return name
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part[0]?.toUpperCase() ?? '')
+    .join('');
+}
+
 async function initialize(): Promise<void> {
+  initializeTheme();
+
   const { data, error } = await supabaseClient.auth.getSession();
   const user = data.session?.user;
 
@@ -22,16 +34,28 @@ async function initialize(): Promise<void> {
   }
 
   setUserId(user.id);
-  getElement('user-name').textContent =
-    user.user_metadata?.full_name ?? user.email ?? '';
+
+  const displayName =
+    user.user_metadata?.full_name ?? user.email?.split('@')[0] ?? 'Пользователь';
+  getElement('user-name').textContent = displayName;
+  getElement('user-initials').textContent = getInitials(displayName) || 'FT';
 
   await ensureProfile();
   initializeDialogControls();
   initializeGroups(openSessionSetup);
   initializeTimer();
 
+  document
+    .querySelectorAll<HTMLElement>('[data-open-session]:not(#open-session)')
+    .forEach((button) => {
+      button.addEventListener('click', () => {
+        getElement<HTMLButtonElement>('open-session').click();
+      });
+    });
+
   try {
-    await Promise.all([loadGroupsAndTasks(), loadStatistics()]);
+    await loadGroupsAndTasks();
+    await loadStatistics();
     await restoreTimer();
   } catch (loadError) {
     console.error(loadError);

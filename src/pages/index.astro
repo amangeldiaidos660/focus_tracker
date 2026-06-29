@@ -16,14 +16,17 @@ import '../styles/global.css';
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#050914" />
     <title>Focus Tracker</title>
   </head>
 
-  <body class="min-h-screen bg-slate-950 text-slate-100">
-    <main id="app" class="mx-auto min-h-screen max-w-6xl px-4 py-6 sm:px-6 lg:px-8">
+  <body>
+    <main id="app" class="app-shell">
       <DashboardHeader />
-      <SessionStartCard />
-      <FocusGroupsSection />
+      <div class="dashboard-grid">
+        <SessionStartCard />
+        <FocusGroupsSection />
+      </div>
       <StatisticsSection />
     </main>
 

@@ -1,47 +1,52 @@
-<section>
-  <div class="mb-4">
-    <h2 class="text-xl font-semibold">Статистика</h2>
-    <p class="mt-1 text-sm text-slate-400">
-      Учитывается фактическое время завершённых и остановленных сессий.
-    </p>
+---
+import { iconSvg } from '../../shared/icons';
+---
+
+<section class="panel stats-panel">
+  <div class="section-header">
+    <h2 class="section-title">Статистика</h2>
+    <select id="stats-period" class="period-select" aria-label="Период статистики">
+      <option value="week">Неделя</option>
+      <option value="month">Месяц</option>
+    </select>
   </div>
 
-  <div class="grid grid-cols-2 gap-3 lg:grid-cols-4">
-    <article class="rounded-xl border border-slate-800 bg-slate-900 p-4">
-      <p class="text-sm text-slate-400">Сегодня</p>
-      <p id="stat-today" class="mt-2 text-2xl font-semibold">0 мин</p>
+  <div class="stats-grid">
+    <article class="stat-card">
+      <p class="stat-label">Общее время</p>
+      <p id="stat-period-total" class="stat-value">0 мин</p>
+      <p id="stat-period-change" class="stat-change">Нет данных за прошлый период</p>
     </article>
-    <article class="rounded-xl border border-slate-800 bg-slate-900 p-4">
-      <p class="text-sm text-slate-400">Неделя</p>
-      <p id="stat-week" class="mt-2 text-2xl font-semibold">0 мин</p>
+
+    <article class="stat-card">
+      <div class="section-kicker">
+        <span set:html={iconSvg('chart')}></span>
+        Время по дням
+      </div>
+      <div id="weekly-bars" class="bar-chart"></div>
     </article>
-    <article class="rounded-xl border border-slate-800 bg-slate-900 p-4">
-      <p class="text-sm text-slate-400">Месяц</p>
-      <p id="stat-month" class="mt-2 text-2xl font-semibold">0 мин</p>
-    </article>
-    <article class="rounded-xl border border-slate-800 bg-slate-900 p-4">
-      <p class="text-sm text-slate-400">Всё время</p>
-      <p id="stat-total" class="mt-2 text-2xl font-semibold">0 мин</p>
+
+    <article class="stat-card">
+      <p class="stat-label">Распределение по группам</p>
+      <div class="distribution-layout">
+        <div id="group-distribution-chart" class="donut-chart"></div>
+        <div id="group-distribution-legend" class="distribution-legend"></div>
+      </div>
     </article>
   </div>
 
-  <div class="mt-4 overflow-hidden rounded-xl border border-slate-800">
-    <div class="border-b border-slate-800 bg-slate-900 px-4 py-3 font-medium">
-      История по дням
+  <div class="activity-panel">
+    <div class="section-kicker">
+      <span set:html={iconSvg('layers')}></span>
+      Активность за последние 13 недель
     </div>
-    <div id="history-empty" class="p-5 text-sm text-slate-500">
-      Завершённых сессий пока нет.
-    </div>
-    <div class="overflow-x-auto">
-      <table id="history-table" class="hidden w-full text-left text-sm">
-        <thead class="bg-slate-900/60 text-slate-400">
-          <tr>
-            <th class="px-4 py-3 font-medium">Дата</th>
-            <th class="px-4 py-3 text-right font-medium">Время фокуса</th>
-          </tr>
-        </thead>
-        <tbody id="history-body" class="divide-y divide-slate-800"></tbody>
-      </table>
+    <div class="activity-scroll">
+      <div class="activity-layout">
+        <div class="activity-weekdays" aria-hidden="true">
+          <span>Пн</span><span></span><span>Ср</span><span></span><span>Пт</span><span></span><span>Вс</span>
+        </div>
+        <div id="activity-heatmap" class="activity-heatmap"></div>
+      </div>
     </div>
   </div>
 </section>

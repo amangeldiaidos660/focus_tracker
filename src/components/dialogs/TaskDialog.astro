@@ -1,55 +1,41 @@
+---
+import { iconSvg } from '../../shared/icons';
+---
+
 <dialog id="task-dialog" class="app-dialog">
   <form id="task-form" class="dialog-card">
-    <div class="flex items-center justify-between gap-4">
-      <h2 class="text-xl font-semibold">Новая задача</h2>
-      <button
-        type="button"
-        data-close-dialog="task-dialog"
-        class="dialog-close"
-        aria-label="Закрыть"
-      >
-        ×
+    <div class="dialog-header">
+      <h2 class="dialog-title">Добавить ресурс</h2>
+      <button type="button" data-close-dialog="task-dialog" class="dialog-close" aria-label="Закрыть">
+        <span set:html={iconSvg('x')}></span>
       </button>
     </div>
 
     <input id="task-group-id" type="hidden" />
 
-    <label class="mt-5 block">
-      <span class="field-label">Название</span>
-      <input
-        id="task-title"
-        class="field-input"
-        maxlength="150"
-        required
-        placeholder="Например, Stepik — основы Python"
-      />
+    <label class="mt-6 block">
+      <span class="field-label">Название ресурса</span>
+      <input id="task-title" class="field-input" maxlength="150" required placeholder="Например: Stepik — Python для начинающих" />
     </label>
 
     <label class="mt-4 block">
       <span class="field-label">Ссылка</span>
-      <input
-        id="task-url"
-        class="field-input"
-        type="url"
-        required
-        placeholder="https://..."
-      />
+      <input id="task-url" class="field-input" type="url" required placeholder="https://..." />
     </label>
 
     <label class="mt-4 block">
-      <span class="field-label">Описание задачи, необязательно</span>
-      <textarea
-        id="task-description"
-        class="field-input min-h-24 resize-y"
-        maxlength="500"
-      ></textarea>
+      <span class="field-label">Фокус-группа</span>
+      <div id="task-group-name" class="field-input flex items-center text-sm text-slate-400"></div>
     </label>
 
-    <div class="mt-6 flex justify-end gap-3">
-      <button type="button" data-close-dialog="task-dialog" class="button-secondary">
-        Отмена
-      </button>
-      <button type="submit" class="button-primary">Создать</button>
+    <label class="mt-4 block">
+      <span class="field-label">Описание, необязательно</span>
+      <textarea id="task-description" class="field-input min-h-20 resize-y" maxlength="500"></textarea>
+    </label>
+
+    <div class="dialog-actions">
+      <button type="button" data-close-dialog="task-dialog" class="button-secondary">Отмена</button>
+      <button type="submit" class="button-primary">Добавить</button>
     </div>
   </form>
 </dialog>

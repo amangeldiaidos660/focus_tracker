@@ -69,7 +69,6 @@ export function initializeGroups(openSession: OpenSession): void {
     'submit',
     async (event) => {
       event.preventDefault();
-
       const title = getElement<HTMLInputElement>('group-title').value.trim();
 
       if (!title) {
@@ -96,14 +95,12 @@ export function initializeGroups(openSession: OpenSession): void {
     'submit',
     async (event) => {
       event.preventDefault();
-
       const groupId = getElement<HTMLInputElement>('task-group-id').value;
       const title = getElement<HTMLInputElement>('task-title').value.trim();
       const url = getElement<HTMLInputElement>('task-url').value.trim();
       const description = getElement<HTMLTextAreaElement>(
         'task-description'
       ).value.trim();
-
       const { data, error } = await createTask({
         userId: getUserId(),
         groupId,
@@ -114,14 +111,14 @@ export function initializeGroups(openSession: OpenSession): void {
 
       if (error || !data) {
         console.error(error);
-        showNotice('Не удалось создать задачу.', 'error');
+        showNotice('Не удалось создать ресурс.', 'error');
         return;
       }
 
       tasksByGroup.set(groupId, [data as FocusTask, ...getTasks(groupId)]);
       renderGroups();
       closeDialog(taskDialog);
-      showNotice('Задача создана.');
+      showNotice('Ресурс добавлен.');
     }
   );
 
@@ -151,6 +148,8 @@ export function initializeGroups(openSession: OpenSession): void {
     if (action === 'add-task') {
       getElement<HTMLFormElement>('task-form').reset();
       getElement<HTMLInputElement>('task-group-id').value = groupId;
+      getElement('task-group-name').textContent =
+        groups.get(groupId)?.title ?? '';
       openDialog(taskDialog);
       return;
     }
@@ -161,7 +160,7 @@ export function initializeGroups(openSession: OpenSession): void {
     }
 
     if (action === 'delete-group') {
-      if (!window.confirm('Удалить группу и все связанные с ней задачи?')) {
+      if (!window.confirm('Удалить группу и все связанные с ней ресурсы?')) {
         return;
       }
 
@@ -169,10 +168,7 @@ export function initializeGroups(openSession: OpenSession): void {
 
       if (error) {
         console.error(error);
-        showNotice(
-          'Не удалось удалить группу. Возможно, с ней связаны задачи или сессии.',
-          'error'
-        );
+        showNotice('Не удалось удалить группу.', 'error');
         return;
       }
 
@@ -195,7 +191,7 @@ export function initializeGroups(openSession: OpenSession): void {
 
       if (error) {
         console.error(error);
-        showNotice('Не удалось изменить статус задачи.', 'error');
+        showNotice('Не удалось изменить статус ресурса.', 'error');
         return;
       }
 
@@ -203,14 +199,14 @@ export function initializeGroups(openSession: OpenSession): void {
       renderGroups();
       showNotice(
         nextStatus === 'archived'
-          ? 'Задача перенесена в архив.'
-          : 'Задача снова активна.'
+          ? 'Ресурс перенесён в архив.'
+          : 'Ресурс снова активен.'
       );
       return;
     }
 
     if (action === 'delete-task') {
-      if (!window.confirm('Удалить задачу?')) {
+      if (!window.confirm('Удалить ресурс?')) {
         return;
       }
 
@@ -218,10 +214,7 @@ export function initializeGroups(openSession: OpenSession): void {
 
       if (error) {
         console.error(error);
-        showNotice(
-          'Не удалось удалить задачу. Возможно, с ней связаны сессии.',
-          'error'
-        );
+        showNotice('Не удалось удалить ресурс.', 'error');
         return;
       }
 
@@ -230,7 +223,7 @@ export function initializeGroups(openSession: OpenSession): void {
         getTasks(groupId).filter((item) => item.id !== taskId)
       );
       renderGroups();
-      showNotice('Задача удалена.');
+      showNotice('Ресурс удалён.');
     }
   });
 }

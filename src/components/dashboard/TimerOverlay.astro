@@ -1,38 +1,57 @@
-<section
-  id="timer-overlay"
-  class="fixed inset-0 z-[60] hidden min-h-screen items-center justify-center bg-slate-950 px-4"
->
-  <div class="w-full max-w-xl text-center">
-    <p
-      id="timer-mode"
-      class="text-sm font-medium uppercase tracking-[0.25em] text-blue-400"
-    >
-      На время · Фокус
-    </p>
+---
+import { iconSvg } from '../../shared/icons';
+---
 
-    <h2 id="timer-task-title" class="mt-3 text-2xl font-semibold"></h2>
-    <p id="timer-group-title" class="mt-1 text-slate-400"></p>
-    <div
-      id="timer-clock"
-      class="my-10 font-mono text-7xl font-semibold tracking-tight sm:text-8xl"
-    >
-      25:00
+<section id="timer-overlay" class="timer-overlay hidden">
+  <div class="timer-workspace">
+    <div class="timer-task-block">
+      <div class="timer-task-icon" set:html={iconSvg('book')}></div>
+      <h2 id="timer-task-title" class="timer-task-title"></h2>
+      <p id="timer-group-title" class="timer-group-title"></p>
     </div>
-    <p id="timer-message" class="mb-8 text-sm text-slate-400"></p>
 
-    <div class="flex flex-wrap justify-center gap-3">
-      <button id="timer-pause" class="button-secondary px-6 py-3">
-        Пауза
-      </button>
-      <button id="timer-resume" class="button-primary hidden px-6 py-3">
-        Продолжить
-      </button>
-      <button
-        id="timer-stop"
-        class="rounded-lg bg-red-600 px-6 py-3 font-medium text-white hover:bg-red-500"
-      >
-        Закончить
-      </button>
+    <div class="timer-center">
+      <p id="timer-mode" class="timer-mode">На время · Фокус</p>
+      <div id="timer-clock" class="timer-clock">25:00</div>
+      <p id="timer-message" class="timer-message"></p>
+
+      <div class="next-break-card">
+        <span>Следующий перерыв</span>
+        <strong id="timer-next-break">Не запланирован</strong>
+      </div>
+
+      <div class="timer-controls">
+        <button id="timer-pause" class="button-secondary" type="button">
+          <span set:html={iconSvg('pause')}></span>
+          Пауза
+        </button>
+        <button id="timer-resume" class="button-primary hidden" type="button">
+          <span set:html={iconSvg('play')}></span>
+          Продолжить
+        </button>
+        <button id="timer-stop" class="button-danger" type="button">
+          <span set:html={iconSvg('stop')}></span>
+          Завершить
+        </button>
+      </div>
     </div>
+
+    <aside class="panel session-summary">
+      <h3 class="section-title">Текущая сессия</h3>
+      <div class="session-summary-list">
+        <div class="session-summary-row">
+          <span>Режим</span>
+          <strong id="timer-session-mode">На время</strong>
+        </div>
+        <div class="session-summary-row">
+          <span>В фокусе</span>
+          <strong id="timer-focused-value">0 мин</strong>
+        </div>
+        <div class="session-summary-row">
+          <span>Перерывы</span>
+          <strong id="timer-break-detail">Выключены</strong>
+        </div>
+      </div>
+    </aside>
   </div>
 </section>

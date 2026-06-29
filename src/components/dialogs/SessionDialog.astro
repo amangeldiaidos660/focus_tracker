@@ -1,42 +1,26 @@
+---
+import { iconSvg } from '../../shared/icons';
+---
+
 <dialog id="session-dialog" class="app-dialog">
   <form id="session-form" class="dialog-card">
-    <div class="flex items-center justify-between gap-4">
-      <h2 class="text-xl font-semibold">Настройка фокуса</h2>
-      <button
-        type="button"
-        data-close-dialog="session-dialog"
-        class="dialog-close"
-        aria-label="Закрыть"
-      >
-        ×
+    <div class="dialog-header">
+      <h2 class="dialog-title">Настройка таймера</h2>
+      <button type="button" data-close-dialog="session-dialog" class="dialog-close" aria-label="Закрыть">
+        <span set:html={iconSvg('x')}></span>
       </button>
     </div>
 
-    <fieldset class="mt-5">
+    <fieldset class="mt-6">
       <legend class="field-label">Режим таймера</legend>
-      <div class="grid grid-cols-2 gap-2">
-        <label class="cursor-pointer">
-          <input
-            class="peer sr-only"
-            type="radio"
-            name="session-mode"
-            value="countdown"
-            checked
-          />
-          <span class="block rounded-lg border border-slate-700 px-3 py-3 text-center text-sm peer-checked:border-blue-500 peer-checked:bg-blue-500/10 peer-checked:text-blue-300">
-            На время
-          </span>
+      <div class="mode-grid">
+        <label class="mode-option">
+          <input type="radio" name="session-mode" value="countdown" checked />
+          <span><span set:html={iconSvg('clock')}></span>На время</span>
         </label>
-        <label class="cursor-pointer">
-          <input
-            class="peer sr-only"
-            type="radio"
-            name="session-mode"
-            value="stopwatch"
-          />
-          <span class="block rounded-lg border border-slate-700 px-3 py-3 text-center text-sm peer-checked:border-blue-500 peer-checked:bg-blue-500/10 peer-checked:text-blue-300">
-            Без лимита
-          </span>
+        <label class="mode-option">
+          <input type="radio" name="session-mode" value="stopwatch" />
+          <span><span set:html={iconSvg('play')}></span>Без лимита</span>
         </label>
       </div>
     </fieldset>
@@ -47,69 +31,44 @@
     </label>
 
     <label class="mt-4 block">
-      <span class="field-label">Задача</span>
+      <span class="field-label">Выберите ресурс</span>
       <select id="session-task" class="field-input" required></select>
     </label>
 
     <div id="session-duration-fields" class="mt-4">
-      <span class="field-label">Длительность фокуса, минут</span>
-      <div class="mb-3 grid grid-cols-4 gap-2">
-        <button type="button" data-duration="15" class="button-secondary px-2 py-2 text-sm">15</button>
-        <button type="button" data-duration="25" class="button-secondary px-2 py-2 text-sm">25</button>
-        <button type="button" data-duration="45" class="button-secondary px-2 py-2 text-sm">45</button>
-        <button type="button" data-duration="60" class="button-secondary px-2 py-2 text-sm">60</button>
+      <span class="field-label">Длительность фокуса</span>
+      <div class="duration-presets">
+        <button type="button" data-duration="15" class="button-secondary">15 мин</button>
+        <button type="button" data-duration="25" class="button-secondary">25 мин</button>
+        <button type="button" data-duration="45" class="button-secondary">45 мин</button>
+        <button type="button" data-duration="60" class="button-secondary">60 мин</button>
       </div>
-      <input
-        id="session-duration"
-        class="field-input"
-        type="number"
-        min="1"
-        max="480"
-        value="25"
-        required
-      />
+      <input id="session-duration" class="field-input" type="number" min="1" max="480" value="25" required />
     </div>
 
-    <label class="mt-4 flex items-center gap-3">
-      <input
-        id="break-enabled"
-        type="checkbox"
-        class="h-4 w-4 accent-blue-500"
-      />
-      <span class="text-sm text-slate-200">Включить автоматические перерывы</span>
-    </label>
-
-    <div id="break-fields" class="mt-4 hidden grid-cols-2 gap-4">
-      <label>
-        <span class="field-label">Перерыв через, минут</span>
-        <input
-          id="break-interval"
-          class="field-input"
-          type="number"
-          min="1"
-          max="240"
-          value="25"
-        />
-      </label>
-
-      <label>
-        <span class="field-label">Длительность, минут</span>
-        <input
-          id="break-duration"
-          class="field-input"
-          type="number"
-          min="1"
-          max="60"
-          value="5"
-        />
+    <div class="switch-row">
+      <span class="field-label mb-0">Автоматические перерывы</span>
+      <label class="switch-control">
+        <input id="break-enabled" type="checkbox" />
+        <span class="switch-track"></span>
       </label>
     </div>
 
-    <div class="mt-6 flex justify-end gap-3">
-      <button type="button" data-close-dialog="session-dialog" class="button-secondary">
-        Отмена
-      </button>
+    <div id="break-fields" class="mt-4 hidden grid-cols-2 gap-3">
+      <label>
+        <span class="field-label">Каждые</span>
+        <input id="break-interval" class="field-input" type="number" min="1" max="240" value="25" />
+      </label>
+      <label>
+        <span class="field-label">Длительность</span>
+        <input id="break-duration" class="field-input" type="number" min="1" max="60" value="5" />
+      </label>
+    </div>
+
+    <div class="dialog-actions">
+      <button type="button" data-close-dialog="session-dialog" class="button-secondary">Отмена</button>
       <button id="session-submit" type="submit" class="button-primary">
+        <span set:html={iconSvg('play')}></span>
         Начать фокус
       </button>
     </div>
