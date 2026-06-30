@@ -63,6 +63,23 @@ export function fetchSessionStatus(sessionId: string) {
     .single();
 }
 
+// export function finishSessionRecord(
+//   sessionId: string,
+//   status: 'completed' | 'cancelled',
+//   durationSeconds: number,
+//   pauseCount: number
+// ) {
+//   return supabaseClient
+//     .from('focus_sessions')
+//     .update({
+//       ended_at: new Date().toISOString(),
+//       duration_seconds: durationSeconds,
+//       status,
+//       pause_count: pauseCount
+//     })
+//     .eq('id', sessionId);
+// }
+
 export function finishSessionRecord(
   sessionId: string,
   status: 'completed' | 'cancelled',
@@ -77,7 +94,9 @@ export function finishSessionRecord(
       status,
       pause_count: pauseCount
     })
-    .eq('id', sessionId);
+    .eq('id', sessionId)
+    .select('id,status,ended_at,duration_seconds')
+    .single();
 }
 
 export function pauseSession(sessionId: string, pauseCount: number) {
